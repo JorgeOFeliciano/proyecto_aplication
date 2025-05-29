@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class ReservaDetalleScreen extends StatelessWidget {
   final Map<String, dynamic> mesaInfo;
 
-  const ReservaDetalleScreen({Key? key, required this.mesaInfo}) : super(key: key);
+  const ReservaDetalleScreen({super.key, required this.mesaInfo});
 
   @override
   Widget build(BuildContext context) {
-    // ✅ Manejo seguro de horarios
+    // Manejo seguro de horarios
     final horarioInicio = mesaInfo['horariosDisponibles']?['inicio']?.hour ?? 0;
     final horarioFin = mesaInfo['horariosDisponibles']?['fin']?.hour ?? 23;
 
@@ -51,54 +51,18 @@ class ReservaDetalleScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // 🍽️ Detalles de la mesa
-            Row(
-              children: [
-                const Icon(Icons.table_bar, size: 20, color: Colors.grey),
-                const SizedBox(width: 8),
-                Expanded(child: const Text("Mesa:", style: TextStyle(fontSize: 16))),
-                Text(mesaInfo['nombre'], style: const TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.people, size: 20, color: Colors.grey),
-                const SizedBox(width: 8),
-                Expanded(child: const Text("Capacidad:", style: TextStyle(fontSize: 16))),
-                Text("${mesaInfo['capacidad']} personas", style: const TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.calendar_today, size: 20, color: Colors.grey),
-                const SizedBox(width: 8),
-                Expanded(child: const Text("Fecha de Reserva:", style: TextStyle(fontSize: 16))),
-                Text(mesaInfo['fechaReserva'] ?? "No especificada", style: const TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.watch_later, size: 20, color: Colors.grey),
-                const SizedBox(width: 8),
-                Expanded(child: const Text("Hora de Reserva:", style: TextStyle(fontSize: 16))),
-                Text(mesaInfo['horaReserva'] ?? "No especificada", style: const TextStyle(fontSize: 16)),
-              ],
-            ),
+            _buildDetailRow(Icons.table_bar, "Mesa", mesaInfo['nombre']),
+            _buildDetailRow(Icons.people, "Capacidad", "${mesaInfo['capacidad']} personas"),
+            _buildDetailRow(Icons.calendar_today, "Fecha de Reserva", mesaInfo['fechaReserva'] ?? "No especificada"),
+            _buildDetailRow(Icons.watch_later, "Hora de Reserva", mesaInfo['horaReserva'] ?? "No especificada"),
 
             const SizedBox(height: 24),
             const Divider(thickness: 1, color: Colors.grey),
 
-            // 🛑 Estado de la mesa con alineación
             const Text("Estado de la Mesa", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            
-
             const SizedBox(height: 24),
             const Divider(thickness: 1, color: Colors.grey),
 
-            // 🏷️ Información adicional
             const Text("Características", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             Text(mesaInfo['mensaje'], style: const TextStyle(fontSize: 16)),
@@ -106,21 +70,24 @@ class ReservaDetalleScreen extends StatelessWidget {
             const SizedBox(height: 24),
             const Divider(thickness: 1, color: Colors.grey),
 
-            // 🕒 Horario de Reservaciones
             const Text("Horario de Reservaciones", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                const Icon(Icons.access_time, size: 20, color: Colors.grey),
-                const SizedBox(width: 8),
-                Expanded(child: const Text("Horario:", style: TextStyle(fontSize: 16))),
-                Text("De $horarioInicio:00 a $horarioFin:00",
-                    style: const TextStyle(fontSize: 16)),
-              ],
-            ),
+            _buildDetailRow(Icons.access_time, "Horario", "De $horarioInicio:00 a $horarioFin:00"),
           ],
         ),
       ),
+    );
+  }
+
+  /// Método auxiliar para construir filas de información con íconos
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Colors.grey),
+        const SizedBox(width: 8),
+        Expanded(child: Text(label, style: const TextStyle(fontSize: 16))),
+        Text(value, style: const TextStyle(fontSize: 16)),
+      ],
     );
   }
 }

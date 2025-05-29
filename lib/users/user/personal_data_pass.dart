@@ -4,7 +4,7 @@ import 'package:proyecto_aplication/items/items.dart';
 class CambiarContrasenaScreen extends StatefulWidget {
   final Map<String, String> usuario;
 
-  const CambiarContrasenaScreen({Key? key, required this.usuario}) : super(key: key);
+  const CambiarContrasenaScreen({super.key, required this.usuario});
 
   @override
   State<CambiarContrasenaScreen> createState() => _CambiarContrasenaScreenState();
@@ -29,8 +29,10 @@ class _CambiarContrasenaScreenState extends State<CambiarContrasenaScreen> {
       tieneNumero = nuevaContrasena.contains(RegExp(r'[0-9]'));
       minimoCaracteres = nuevaContrasena.length >= 6;
       cambiosRealizados = nuevaContrasena.isNotEmpty &&
-                          nuevaContrasena == confirmarContrasena &&
-                          tieneMayuscula && tieneNumero && minimoCaracteres;
+          nuevaContrasena == confirmarContrasena &&
+          tieneMayuscula &&
+          tieneNumero &&
+          minimoCaracteres;
     });
   }
 
@@ -53,10 +55,10 @@ class _CambiarContrasenaScreenState extends State<CambiarContrasenaScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              Center(
+              const Center(
                 child: Text(
                   'Introduce tu nueva contraseña',
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(height: 20),
@@ -86,8 +88,10 @@ class _CambiarContrasenaScreenState extends State<CambiarContrasenaScreen> {
                   setState(() {
                     confirmarContrasena = value;
                     cambiosRealizados = nuevaContrasena.isNotEmpty &&
-                                        nuevaContrasena == confirmarContrasena &&
-                                        tieneMayuscula && tieneNumero && minimoCaracteres;
+                        nuevaContrasena == confirmarContrasena &&
+                        tieneMayuscula &&
+                        tieneNumero &&
+                        minimoCaracteres;
                   });
                 },
                 mostrarConfirmarContrasena,
@@ -107,14 +111,14 @@ class _CambiarContrasenaScreenState extends State<CambiarContrasenaScreen> {
               ),
 
               const SizedBox(height: 10),
-              
+
               SimpleButton(
                 label: 'Cancelar',
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                backgroundColor: const Color.fromARGB(255, 121, 120, 120), 
-                textColor: Colors.white
+                backgroundColor: const Color.fromARGB(255, 121, 120, 120),
+                textColor: Colors.white,
               ),
             ],
           ),
@@ -123,7 +127,12 @@ class _CambiarContrasenaScreenState extends State<CambiarContrasenaScreen> {
     );
   }
 
-  Widget _buildPasswordField(String label, String value, Function(String) onChanged, bool mostrarContrasena, Function() toggleVisibilidad) {
+  Widget _buildPasswordField(
+      String label,
+      String value,
+      Function(String) onChanged,
+      bool mostrarContrasena,
+      Function() toggleVisibilidad) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
@@ -135,14 +144,6 @@ class _CambiarContrasenaScreenState extends State<CambiarContrasenaScreen> {
           labelText: label,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
           ),

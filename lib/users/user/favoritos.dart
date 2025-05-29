@@ -3,13 +3,15 @@ import 'package:proyecto_aplication/card/card_restaurant.dart';
 import 'package:proyecto_aplication/data/maps.dart';
 import 'package:proyecto_aplication/items/drawer.dart';
 import 'package:proyecto_aplication/items/top_bar.dart';
+import 'package:proyecto_aplication/users/user/shop_lista.dart';
 
 class Favoritos extends StatefulWidget {
-  const Favoritos({Key? key}) : super(key: key);
+  const Favoritos({super.key});
 
   @override
   State<Favoritos> createState() => _FavoritosState();
 }
+
 class _FavoritosState extends State<Favoritos> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -28,9 +30,19 @@ class _FavoritosState extends State<Favoritos> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomTopSearchBar(
-              onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
-              onLocationTap: () {},
+            Builder(
+              builder: (context) {
+                return CustomTopSearchBar(
+                  onMenuTap: () => Scaffold.of(context).openDrawer(),
+                  onBack: () => Navigator.pop(context),
+                  onCartTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ListShops()),
+                    );
+                  },
+                );
+              },
             ),
             Container(
               height: 50,

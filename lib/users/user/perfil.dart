@@ -23,7 +23,7 @@ class Perfil extends StatelessWidget {
           ),
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // ✅ Difuminado suave
-            child: Container(color: Colors.black.withOpacity(0.5)),
+            child: Container(color: Colors.black.withAlpha(127)) // 0.5 * 255 ≈ 127,
           ),
 
           Column(

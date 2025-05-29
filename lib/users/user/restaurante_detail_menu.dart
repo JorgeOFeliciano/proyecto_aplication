@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_aplication/data/maps.dart';
+import 'package:proyecto_aplication/users/user/restaurante_detail_carrito_screen.dart';
 
 class RestaurantMenuScreen extends StatefulWidget {
   const RestaurantMenuScreen({super.key});
@@ -12,21 +13,19 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   late Map<String, List<Map<String, dynamic>>> menu;
   late List<String> categories;
   String selectedCategory = '';
+  late String restaurantTitle;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // ✅ Obtener los argumentos y restaurante
     final Map<String, dynamic> args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final String restaurantTitle = args['title'];
+    restaurantTitle = args['title']; // ✅ Guardamos el nombre del restaurante
 
-    // ✅ Generar menú usando el título del restaurante
     final generatedMenu = generateMenu(restaurantTitle);
     menu = generatedMenu[restaurantTitle] ?? {};
 
     categories = menu.keys.toList();
-
     if (categories.isNotEmpty) {
       selectedCategory = categories.first;
     }
@@ -42,6 +41,26 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: Colors.black,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              final pedidoRestaurante = carritoCompras
+                  .where((item) => item['restaurant'] == restaurantTitle)
+                  .toList();
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PedidoScreen(
+                    restaurantName: restaurantTitle,
+                    pedido: pedidoRestaurante,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +129,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               borderRadius: BorderRadius.circular(10),
               child: item['image'] != null && item['image'].isNotEmpty
                   ? Image.asset(
-                      'assets/${item['image']}', // Asegúrate de que los assets estén bien cargados
+                      'assets/${item['image']}',
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,
@@ -135,6 +154,15 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
             IconButton(
               icon: const Icon(Icons.add_circle_outline),
               onPressed: () {
+                setState(() {
+                  carritoCompras.add({
+                    'restaurant': restaurantTitle,
+                    'name': item['name'],
+                    'price': item['price'],
+                    'quantity': 1,
+                  });
+                });
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('${item['name']} añadido al carrito')),
                 );
@@ -146,3 +174,4 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
     );
   }
 }
+

@@ -13,10 +13,10 @@ double calcularPromedioCalificaciones(String restaurantTitle) {
     orElse: () => {'reviews': []},
   )['reviews'] as List<Map<String, dynamic>>;
 
-  if (reviews.isEmpty) return 0.0; // Si no hay opiniones, devuelve 0.0
+  if (reviews.isEmpty) return 0.0;
 
   final double sumRatings = reviews.map<double>((review) => review['rating'] as double).reduce((a, b) => a + b);
-  return sumRatings / reviews.length; // ✅ Promedio de calificación
+  return sumRatings / reviews.length;
 }
 
 // ✅ Función para obtener el número total de favoritos por restaurante
@@ -72,7 +72,7 @@ class CustomRestaurantCard extends StatelessWidget {
                 BoxShadow(
                   blurRadius: 10,
                   spreadRadius: 2,
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withAlpha(25), // 0.1 * 255 ≈ 25
                   offset: const Offset(0, 4),
                 ),
               ],
@@ -88,70 +88,42 @@ class CustomRestaurantCard extends StatelessWidget {
                           width: 120,
                           height: 99,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.store, size: 99, color: Colors.grey),
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.store, size: 99, color: Colors.grey),
                         )
                       : const Icon(Icons.store, size: 99, color: Colors.grey),
                 ),
                 const SizedBox(height: 16),
-
                 Text(
-                  title.toUpperCase(),
+                  title,
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
-
-                Row(
-                  children: [
-                    const Icon(Icons.chair_alt, color: Colors.grey),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text("$seats/$totalSeats", style: const TextStyle(color: Colors.grey))),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.amber),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text("$rating/$maxRating", style: const TextStyle(color: Colors.grey))),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.favorite, color: Colors.red),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text("$favorites", style: const TextStyle(color: Colors.grey))),
-                  ],
-                ),
+                _buildInfoRow(Icons.chair_alt, "$seats/$totalSeats", Colors.blueGrey),
+                _buildInfoRow(Icons.star, "$rating/$maxRating", Colors.amber),
+                _buildInfoRow(Icons.favorite, "$favorites", Colors.red),
                 const SizedBox(height: 16),
-
                 if (reservationDate != null || reservationTime != null || tableNumber != null) ...[
                   const Divider(thickness: 1),
-                  Row(
-                    children: [
-                      const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(reservationDate ?? "Sin fecha", style: const TextStyle(color: Colors.grey))),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Icon(Icons.access_time, size: 16, color: Colors.grey),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(reservationTime ?? "Sin hora", style: const TextStyle(color: Colors.grey))),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Icon(Icons.table_bar, size: 16, color: Colors.grey),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text("Mesa ${tableNumber ?? "No asignada"}", style: const TextStyle(color: Colors.grey))),
-                    ],
-                  ),
+                  _buildInfoRow(Icons.calendar_today, reservationDate ?? "Sin fecha", Colors.teal),
+                  _buildInfoRow(Icons.access_time, reservationTime ?? "Sin hora", Colors.orange),
+                  _buildInfoRow(Icons.table_bar, "Mesa ${tableNumber ?? "No asignada"}", Colors.green),
                 ],
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String info, Color iconColor) {
+    return Row(
+      children: [
+        Icon(icon, color: iconColor),
+        const SizedBox(width: 8),
+        Expanded(child: Text(info, style: TextStyle(color: Colors.grey.shade500))), // ✅ Texto en gris claro
+      ],
     );
   }
 }
@@ -169,11 +141,11 @@ class RestaurantCardItem extends StatelessWidget {
     return CustomRestaurantCard(
       imagePath: data['image'],
       title: restaurantTitle,
-      seats: calcularMesasDisponibles(restaurantTitle), // ✅ Mesas dinámicas
+      seats: calcularMesasDisponibles(restaurantTitle),
       totalSeats: data['totalSeats'],
-      rating: calcularPromedioCalificaciones(restaurantTitle).toInt(), // ✅ Promedio dinámico
+      rating: calcularPromedioCalificaciones(restaurantTitle).toInt(),
       maxRating: 5,
-      favorites: obtenerTotalFavoritos(restaurantTitle), // ✅ Conteo de favoritos
+      favorites: obtenerTotalFavoritos(restaurantTitle),
       reservationDate: data['reservationDate'],
       reservationTime: data['reservationTime'],
       tableNumber: data['tableNumber'],

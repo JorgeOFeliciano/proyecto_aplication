@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_aplication/data/maps.dart';
 
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({Key? key}) : super(key: key);
+  const CustomDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class CustomDrawer extends StatelessWidget {
           // ✅ Encabezado del Drawer con imagen de fondo oscurecida
           UserAccountsDrawerHeader(
             accountName: const Text('Jorge Osvaldo'),
-            accountEmail: const Text(''), 
+            accountEmail: const Text(''),
             currentAccountPicture: CircleAvatar(
               backgroundImage: usuarios[0]['imagenPerfil'] != null && usuarios[0]['imagenPerfil']!.isNotEmpty
                   ? AssetImage(usuarios[0]['imagenPerfil']!)
@@ -27,7 +27,7 @@ class CustomDrawer extends StatelessWidget {
               image: DecorationImage(
                 image: AssetImage('coffe_bg.jpg'),
                 fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.darken), // ✅ Oscurece la imagen
+                colorFilter: ColorFilter.mode(Colors.black.withAlpha(153), BlendMode.darken), // ✅ Sustituye withOpacity (0.6 * 255 ≈ 153)
               ),
             ),
           ),

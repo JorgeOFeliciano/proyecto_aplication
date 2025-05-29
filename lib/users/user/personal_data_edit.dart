@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class EditarDatosScreen extends StatefulWidget {
   final Map<String, String> usuario;
 
-  const EditarDatosScreen({Key? key, required this.usuario}) : super(key: key);
+  const EditarDatosScreen({super.key, required this.usuario});
 
   @override
   State<EditarDatosScreen> createState() => _EditarDatosScreenState();
@@ -19,7 +19,7 @@ class _EditarDatosScreenState extends State<EditarDatosScreen> {
   late String ciudad;
   late String pais;
   late String imagenPerfil;
-  bool cambiosRealizados = false; // ✅ Variable para detectar cambios
+  bool cambiosRealizados = false;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -44,88 +44,85 @@ class _EditarDatosScreenState extends State<EditarDatosScreen> {
     });
   }
 
+  void _guardarCambios() {
+    if (_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Información actualizada')),
+      );
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Editar Datos Personales'),
-        backgroundColor: Colors.white, // ✅ Mantiene el color fijo
+        backgroundColor: Colors.white,
         elevation: 0,
         titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-        iconTheme: const IconThemeData(color: Colors.black), // ✅ Íconos en negro
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            const SizedBox(height: 20),
-
-            // ✅ Imagen y nombre del usuario centrado
-            Center(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.grey[300],
-                    backgroundImage: imagenPerfil.isNotEmpty ? AssetImage(imagenPerfil) : null,
-                    child: imagenPerfil.isEmpty ? const Icon(Icons.person, size: 50, color: Colors.blueGrey) : null,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    nombre,
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              const SizedBox(height: 20),
+              Center(
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.grey[300],
+                      backgroundImage: imagenPerfil.isNotEmpty ? AssetImage(imagenPerfil) : null,
+                      child: imagenPerfil.isEmpty ? const Icon(Icons.person, size: 50, color: Colors.blueGrey) : null,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      nombre,
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ✅ Campos editables con detección de cambios
-            _buildTextField('Nombre(s)', nombre, (value) { nombre = value; detectarCambios(); }),
-            _buildTextField('Apellido(s)', apellido, (value) { apellido = value; detectarCambios(); }),
-            _buildTextField('Correo electrónico', correo, (value) { correo = value; detectarCambios(); }, keyboardType: TextInputType.emailAddress),
-            _buildTextField('Teléfono', telefono, (value) { telefono = value; detectarCambios(); }, keyboardType: TextInputType.phone),
-            _buildTextField('Fecha de nacimiento', fechaNacimiento, (value) { fechaNacimiento = value; detectarCambios(); }),
-            _buildTextField('Código Postal', codigoPostal, (value) { codigoPostal = value; detectarCambios(); }),
-            _buildTextField('Ciudad', ciudad, (value) { ciudad = value; detectarCambios(); }),
-            _buildTextField('País', pais, (value) { pais = value; detectarCambios(); }),
-
-            const SizedBox(height: 30),
-
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: cambiosRealizados ? Colors.brown : Colors.grey, // ✅ Marrón cuando hay cambios
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)), // ✅ Cuadrado con bordes redondeados
+              const SizedBox(height: 20),
+              _buildTextField('Nombre(s)', nombre, (value) { nombre = value; detectarCambios(); }),
+              _buildTextField('Apellido(s)', apellido, (value) { apellido = value; detectarCambios(); }),
+              _buildTextField('Correo electrónico', correo, (value) { correo = value; detectarCambios(); }, keyboardType: TextInputType.emailAddress),
+              _buildTextField('Teléfono', telefono, (value) { telefono = value; detectarCambios(); }, keyboardType: TextInputType.phone),
+              _buildTextField('Fecha de nacimiento', fechaNacimiento, (value) { fechaNacimiento = value; detectarCambios(); }),
+              _buildTextField('Código Postal', codigoPostal, (value) { codigoPostal = value; detectarCambios(); }),
+              _buildTextField('Ciudad', ciudad, (value) { ciudad = value; detectarCambios(); }),
+              _buildTextField('País', pais, (value) { pais = value; detectarCambios(); }),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: cambiosRealizados ? Colors.brown : Colors.grey,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                ),
+                onPressed: cambiosRealizados ? _guardarCambios : null,
+                child: const Text('Guardar cambios'),
               ),
-              onPressed: cambiosRealizados ? () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Información actualizada')),
-                );
-                Navigator.pop(context);
-              } : null, // ✅ Desactivado si no hay cambios
-              child: const Text('Guardar cambios'),
-            ),
-
-            const SizedBox(height: 10), // Espacio entre botones
-
-            // ✅ Botón de cancelar
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey, // ✅ Siempre gris para indicar cancelación
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)), // ✅ Cuadrado con bordes redondeados
+              const SizedBox(height: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancelar'),
               ),
-              onPressed: () {
-                Navigator.pop(context); // ✅ Cierra la pantalla sin guardar cambios
-              },
-              child: const Text('Cancelar'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -134,11 +131,11 @@ class _EditarDatosScreenState extends State<EditarDatosScreen> {
   Widget _buildTextField(String label, String value, Function(String) onChanged, {TextInputType keyboardType = TextInputType.text}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        controller: TextEditingController(text: value),
+      child: TextFormField(
+        initialValue: value,
         onChanged: onChanged,
         keyboardType: keyboardType,
-        style: const TextStyle(fontWeight: FontWeight.bold), // ✅ Texto en negrita dentro del campo
+        style: const TextStyle(fontWeight: FontWeight.bold),
         decoration: InputDecoration(
           labelText: label.toUpperCase(),
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
@@ -146,15 +143,13 @@ class _EditarDatosScreenState extends State<EditarDatosScreen> {
             borderRadius: BorderRadius.circular(10),
             borderSide: const BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 2),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 2),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 2),
-          ),
         ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Este campo es obligatorio';
+          }
+          return null;
+        },
       ),
     );
   }

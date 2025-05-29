@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class WelcomeScreen extends StatelessWidget {
             'assets/coffe_bg.jpg',
             fit: BoxFit.cover,
           ),
-          Container(color: Colors.black.withOpacity(0.3)),
+          Container(color: Colors.black.withAlpha(76)), // ✅ Sustituye withOpacity (0.3 * 255 ≈ 76)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 40.0),
             child: Column(
@@ -45,7 +45,7 @@ class WelcomeScreen extends StatelessWidget {
                         Navigator.pushNamed(context, '/login');
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white.withOpacity(0.8),
+                        backgroundColor: Colors.white.withAlpha(204), // ✅ Sustituye withOpacity (0.8 * 255 ≈ 204)
                         padding: const EdgeInsets.symmetric(vertical: 25),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -61,7 +61,7 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
-                        Navigator.pushNamed(context, '/register');
+                    Navigator.pushNamed(context, '/register');
                   },
                   child: const Text(
                     'REGÍSTRATE',

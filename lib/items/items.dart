@@ -9,13 +9,13 @@ class CustomButton extends StatelessWidget {
   final double borderRadius;
 
   const CustomButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.isActive = false, // ✅ Controla si el botón está activo
     this.paddingVertical = 12, // ✅ Permite cambiar el tamaño vertical
     this.borderRadius = 6, // ✅ Permite modificar el radio de los bordes
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +43,12 @@ class SimpleButton extends StatelessWidget {
   final Color textColor;
 
   const SimpleButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.backgroundColor = Colors.grey, // ✅ Color por defecto gris
     this.textColor = Colors.white, // ✅ Texto por defecto blanco
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

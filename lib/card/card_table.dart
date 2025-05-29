@@ -4,7 +4,7 @@ import 'package:proyecto_aplication/users/user/reserva_detail.dart';
 class MesaCard extends StatelessWidget {
   final Map<String, dynamic> mesa;
 
-  const MesaCard({required this.mesa, Key? key}) : super(key: key);
+  const MesaCard({super.key, required this.mesa});
 
   @override
   Widget build(BuildContext context) {
@@ -34,20 +34,10 @@ class MesaCard extends StatelessWidget {
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.chair, size: 100, color: Colors.grey),
                       )
-                    : Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.storefront,
-                          size: 50,
-                          color: Colors.brown,
-                        ),
-                      ),
+                    : const Icon(Icons.chair, size: 100, color: Colors.grey),
               ),
               const SizedBox(width: 10),
               Expanded(

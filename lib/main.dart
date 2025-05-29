@@ -8,14 +8,14 @@ import 'package:proyecto_aplication/users/user/restaurante_detail.dart';
 import 'package:proyecto_aplication/users/user/restaurante_detail_menu.dart';
 import 'package:proyecto_aplication/users/user/restaurante_detail_mesas.dart';
 import 'package:proyecto_aplication/users/user/personal_data.dart';
-import 'package:proyecto_aplication/users/user/setting.dart'; // ✅ Cambié settings.dart por personal_data.dart
+import 'package:proyecto_aplication/users/user/setting.dart'; // ✅ Asegurando la estructura correcta
 
 void main() {
   runApp(const TableSmartApp());
 }
 
 class TableSmartApp extends StatelessWidget {
-  const TableSmartApp({Key? key}) : super(key: key);
+  const TableSmartApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +31,11 @@ class TableSmartApp extends StatelessWidget {
         '/user_rest_det': (context) => const RestaurantDetail(),
         '/tables': (context) => const TableReservationScreen(),
         '/menu': (context) => const RestaurantMenuScreen(),
-        '/personal_data': (context) { // ✅ Cambié settings por datos personales
+        '/personal_data': (context) {
           final args = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
           return PersonalDataScreen(usuario: args);
         },
-        '/settings': (context) { // ✅ Cambié settings por datos personales
+        '/settings': (context) {
           final args = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
           return SettingsScreen(usuario: args);
         },

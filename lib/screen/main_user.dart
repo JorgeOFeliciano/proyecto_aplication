@@ -6,7 +6,7 @@ import 'package:proyecto_aplication/users/user/reserva.dart';
 import 'package:proyecto_aplication/users/user/restaurantes.dart';
 
 class MainUserScreen extends StatefulWidget {
-  const MainUserScreen({Key? key}) : super(key: key);
+  const MainUserScreen({super.key});
 
   @override
   State<MainUserScreen> createState() => _MainUserScreenState();

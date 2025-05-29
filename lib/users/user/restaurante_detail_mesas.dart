@@ -86,7 +86,6 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
     );
   }
 
-  // ✅ Tarjeta de mesa con detalles
   Widget _buildTableCard(Map<String, dynamic> mesa) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -94,14 +93,26 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.15), blurRadius: 6, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(
+          color: Colors.grey.shade500.withAlpha(38),
+          blurRadius: 6,
+          offset: const Offset(0, 4),
+        )],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.asset(mesa['imagen'], width: 90, height: 90, fit: BoxFit.cover),
+            child: mesa['imagen'] != null && mesa['imagen'].isNotEmpty
+                ? Image.asset(
+                    mesa['imagen'], 
+                    width: 90, 
+                    height: 90, 
+                    fit: BoxFit.cover, 
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.chair, size: 90, color: Colors.grey),
+                  )
+                : const Icon(Icons.chair, size: 90, color: Colors.grey),
           ),
           const SizedBox(width: 12),
           Expanded(

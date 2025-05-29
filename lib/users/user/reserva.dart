@@ -3,9 +3,10 @@ import 'package:proyecto_aplication/card/card_table.dart';
 import 'package:proyecto_aplication/data/maps.dart';
 import 'package:proyecto_aplication/items/drawer.dart';
 import 'package:proyecto_aplication/items/top_bar.dart';
+import 'package:proyecto_aplication/users/user/shop_lista.dart';
 
 class Reserva extends StatefulWidget {
-  const Reserva({Key? key}) : super(key: key);
+  const Reserva({super.key});
 
   @override
   State<Reserva> createState() => _ReservaState();
@@ -13,7 +14,7 @@ class Reserva extends StatefulWidget {
 
 class _ReservaState extends State<Reserva> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final String selectedFilter = 'Reservadas'; // 🔹 Solo mostrar reservadas
+  final String selectedFilter = 'Reservadas'; // Solo mostrar reservadas
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +26,20 @@ class _ReservaState extends State<Reserva> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomTopSearchBar(
-              onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
-              onLocationTap: () {},
+            Builder(
+              builder: (context) {
+                return CustomTopSearchBar(
+                  onMenuTap: () => Scaffold.of(context).openDrawer(),
+                  onBack: () => Navigator.pop(context),
+                  onCartTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ListShops()),
+                    );
+                  },
+                );
+              },
             ),
-
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Text(
@@ -37,7 +47,6 @@ class _ReservaState extends State<Reserva> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-
             Expanded(
               child: filteredMesas.isEmpty
                   ? const Center(

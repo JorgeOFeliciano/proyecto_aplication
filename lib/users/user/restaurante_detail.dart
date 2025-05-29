@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:proyecto_aplication/data/maps.dart';
+import 'package:proyecto_aplication/items/drawer.dart';
 import 'package:proyecto_aplication/items/items.dart';
+import 'package:proyecto_aplication/users/user/shop_lista.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:proyecto_aplication/items/top_bar.dart';
 
@@ -31,9 +33,8 @@ void actualizarFavorito(String restaurantTitle) {
     restaurants[index]['isFavorite'] = !(restaurants[index]['isFavorite'] as bool);
   }
 }
-
 class RestaurantDetail extends StatefulWidget {
-  const RestaurantDetail({Key? key}) : super(key: key);
+  const RestaurantDetail({super.key});
 
   @override
   State<RestaurantDetail> createState() => _RestaurantDetailState();
@@ -42,20 +43,27 @@ class RestaurantDetail extends StatefulWidget {
 class _RestaurantDetailState extends State<RestaurantDetail> {
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    // Se reciben los argumentos pasados mediante Navigator
+    final Map<String, dynamic> args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-    final Map<String, dynamic>? restaurantData = restaurants.firstWhere(
+    final Map<String, dynamic> restaurantData = restaurants.firstWhere(
       (restaurant) => restaurant['title'] == args['title'],
       orElse: () => {},
     );
-
+    
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            CustomTopSearchBarBack(
-              onBack: () => Navigator.pop(context),
-              onLocationTap: () {},
+            CustomTopSearchBar(
+              onMenuTap: () => Scaffold.of(context).openDrawer(),
+              onCartTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ListShops()),
+                );
+              },
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -64,7 +72,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                   children: [
                     _buildImage(restaurantData),
                     const SizedBox(height: 10),
-                    _buildTitle(restaurantData?['title']),
+                    _buildTitle(restaurantData['title'] ?? "Restaurante"),
                     const SizedBox(height: 20),
                     _buildAdditionalInfo(context, restaurantData),
                     const SizedBox(height: 20),
@@ -82,9 +90,11 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
           ],
         ),
       ),
+      drawer: const CustomDrawer(), // Si deseas el Drawer en esta pantalla también
     );
   }
 
+  /// Construye la imagen principal del restaurante con un botón para marcar favorito
   Widget _buildImage(Map<String, dynamic>? restaurantData) {
     bool isFavorite = restaurantData?['isFavorite'] ?? false;
 
@@ -93,8 +103,15 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
-          child: restaurantData?['image'] != null && restaurantData?['image'].isNotEmpty
-              ? Image.asset(restaurantData!['image'], height: 250, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => _defaultRestaurantIcon())
+          child: restaurantData?['image'] != null &&
+                  restaurantData?['image'].isNotEmpty
+              ? Image.asset(
+                  restaurantData!['image'],
+                  height: 250,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      _defaultRestaurantIcon(),
+                )
               : _defaultRestaurantIcon(),
         ),
         Padding(
@@ -116,6 +133,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
     );
   }
 
+  /// Icono por defecto si no se dispone de imagen
   Widget _defaultRestaurantIcon() {
     return Container(
       height: 250,
@@ -128,7 +146,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
     );
   }
 
-
+  /// Muestra el título del restaurante
   Widget _buildTitle(String? title) {
     return Text(
       title ?? "Restaurante",
@@ -136,7 +154,9 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
     );
   }
 
-  Widget _buildAdditionalInfo(BuildContext context, Map<String, dynamic>? restaurantData) {
+  /// Muestra información adicional como horario, pago y promociones
+  Widget _buildAdditionalInfo(
+      BuildContext context, Map<String, dynamic>? restaurantData) {
     final horarioInicio = restaurantData?['horariosDisponibles']?['inicio'];
     final horarioFin = restaurantData?['horariosDisponibles']?['fin'];
     final horarioTexto = (horarioInicio != null && horarioFin != null)
@@ -147,19 +167,24 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _infoBlock(Icons.access_time, "Horario", horarioTexto),
-        _infoBlock(Icons.payment, "Pago", restaurantData?['payment'] ?? "No disponible"),
-        _infoBlock(Icons.local_offer, "Promo", restaurantData?['promotions'] ?? "Sin promociones"),
+        _infoBlock(
+            Icons.payment, "Pago", restaurantData?['payment'] ?? "No disponible"),
+        _infoBlock(Icons.local_offer, "Promo",
+            restaurantData?['promotions'] ?? "Sin promociones"),
       ],
     );
   }
 
+  /// Bloque de información con ícono y texto
   Widget _infoBlock(IconData icon, String label, String data) {
     return Expanded(
       child: Column(
         children: [
           Icon(icon, color: Colors.brown, size: 30),
           const SizedBox(height: 8),
-          Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(label,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 5),
           Text(data, textAlign: TextAlign.center),
         ],
@@ -167,19 +192,22 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
     );
   }
 
+  /// Muestra los botones para realizar acciones como ver mesas, menú, o llamar
   Widget _buildButtons(BuildContext context, Map<String, dynamic>? restaurantData) {
     return Column(
       children: [
         SimpleButton(
           label: "MESAS",
-          onPressed: () => Navigator.pushNamed(context, '/tables', arguments: {'title': restaurantData?['title']}),
+          onPressed: () =>
+              Navigator.pushNamed(context, '/tables', arguments: {'title': restaurantData?['title']}),
           backgroundColor: const Color(0xFF826B56),
           textColor: Colors.white,
         ),
         const SizedBox(height: 10),
         SimpleButton(
           label: "MENÚ",
-          onPressed: () => Navigator.pushNamed(context, '/menu', arguments: {'title': restaurantData?['title']}),
+          onPressed: () =>
+              Navigator.pushNamed(context, '/menu', arguments: {'title': restaurantData?['title']}),
           backgroundColor: const Color(0xFF826B56),
           textColor: Colors.white,
         ),
@@ -194,8 +222,10 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
       ],
     );
   }
+}
 
-  Widget _buildLocation(Map<String, dynamic>? restaurantData) {
+
+Widget _buildLocation(Map<String, dynamic>? restaurantData) {
     return Column(
       children: [
         const Text("Ubicación", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -223,7 +253,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
       child: const Icon(Icons.location_on, size: 60, color: Colors.blue),
     );
   }
-}
+
 
 Widget _buildReviews(Map<String, dynamic>? restaurantData) {
   if (restaurantData == null || !restaurantData.containsKey('title')) {

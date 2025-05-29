@@ -5,7 +5,7 @@ import 'package:proyecto_aplication/users/user/personal_data_pass.dart';
 class PersonalDataScreen extends StatefulWidget {
   final Map<String, String> usuario;
 
-  const PersonalDataScreen({Key? key, required this.usuario}) : super(key: key);
+  const PersonalDataScreen({super.key, required this.usuario});
 
   @override
   State<PersonalDataScreen> createState() => _PersonalDataScreenState();
@@ -45,26 +45,15 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2937),
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1F2937)),
           ),
           const SizedBox(height: 8),
-          const Divider(
-            color: Color(0xFFD1D5DB),
-            thickness: 1,
-            height: 1,
-          ),
+          const Divider(color: Color(0xFFD1D5DB), thickness: 1, height: 1),
         ],
       ),
     );
@@ -73,23 +62,15 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Datos Personales'),
-      ),
+      appBar: AppBar(title: const Text('Datos Personales')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            const Text(
-              'Información de Cuenta',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            const Text('Información de Cuenta', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
 
-            ListTile(
-              title: Text(correo),
-              subtitle: const Text('Correo electrónico'),
-            ),
+            ListTile(title: Text(correo), subtitle: const Text('Correo electrónico')),
 
             ListTile(
               title: const Text('********'),
@@ -114,10 +95,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Datos Personales',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+                const Text('Datos Personales', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 TextButton.icon(
                   onPressed: () {
                     Navigator.push(

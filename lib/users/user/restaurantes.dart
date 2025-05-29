@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_aplication/card/card_restaurant.dart';
 import 'package:proyecto_aplication/data/maps.dart';
 import 'package:proyecto_aplication/items/drawer.dart';
-import 'package:proyecto_aplication/items/top_bar.dart'; 
+import 'package:proyecto_aplication/items/top_bar.dart';
+import 'package:proyecto_aplication/users/user/shop_lista.dart';
 
 class Restaurante extends StatefulWidget {
-  const Restaurante({Key? key}) : super(key: key);
+  const Restaurante({super.key});
 
   @override
   State<Restaurante> createState() => _RestauranteState();
@@ -20,17 +21,24 @@ class _RestauranteState extends State<Restaurante> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: const CustomDrawer(), // ✅ Usa la clase CustomDrawer
+      drawer: const CustomDrawer(), // Utiliza la clase CustomDrawer
       body: SafeArea(
         child: Column(
           children: [
-            // 🌟 Barra superior con botón de menú
-            CustomTopSearchBar(
-              onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
-              onLocationTap: () {},
+            Builder(
+              builder: (context) {
+                return CustomTopSearchBar(
+                  onMenuTap: () => Scaffold.of(context).openDrawer(), // Abre el drawer correctamente
+                  onBack: () => Navigator.pop(context), // Permite regresar si no es pantalla principal
+                  onCartTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ListShops()), // Redirige al historial de compras
+                    );
+                  },
+                );
+              },
             ),
-
-            // 🌟 Filtros horizontales
             Container(
               height: 50,
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -47,8 +55,7 @@ class _RestauranteState extends State<Restaurante> {
                 },
               ),
             ),
-
-            // 🌟 Lista de restaurantes
+            // Lista de restaurantes en un grid
             Expanded(
               child: GridView.builder(
                 padding: const EdgeInsets.all(10),

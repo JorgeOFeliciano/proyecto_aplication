@@ -168,7 +168,6 @@ final Map<String, Map<String, List<Map<String, dynamic>>>> allMenus = {
   for (final r in restaurants) ...generateMenu(r['title']),
 };
 
-
 final List<Map<String, dynamic>> opiniones = [
   {
     'title': 'Cuphead Coffee',
@@ -196,20 +195,19 @@ final List<Map<String, dynamic>> opiniones = [
   },
 ];
 
-
 final List<Map<String, dynamic>> usuarios = [
   {
     'nombre': 'Jorge Osvaldo',
-    'apellido': 'Feliciano', // ✅ Nuevo dato
+    'apellido': 'Feliciano', 
     'username': '@Mr0TTiZ',
     'correo': 'jorge.osvaldo@email.com',
     'password': '123456',
     'fechaRegistro': 'Febrero 2019',
-    'telefono': '5522334455', // ✅ Nuevo dato
-    'fechaNacimiento': '15 de Julio de 1995', // ✅ Nuevo dato
-    'codigoPostal': '10010', // ✅ Nuevo dato
-    'ciudad': 'Ciudad Hidalgo', // ✅ Nuevo dato
-    'pais': 'México', // ✅ Nuevo dato
+    'telefono': '5522334455', 
+    'fechaNacimiento': '15 de Julio de 1995', 
+    'codigoPostal': '10010', 
+    'ciudad': 'Ciudad Hidalgo', 
+    'pais': 'México',
     'favoritos': '5',
     'reseñas': '18',
     'seguidores': '13',
@@ -217,3 +215,28 @@ final List<Map<String, dynamic>> usuarios = [
     'visitas': '78',
   },
 ];
+
+final List<Map<String, dynamic>> historialCompras = [
+  {
+    'fecha': '28/05/2025',
+    'total': 30.00,
+    'estado': 'Completada',
+    'productos': [
+      {'nombre': 'Hamburguesa', 'cantidad': 2, 'precio': 10.00},
+      {'nombre': 'Papas fritas', 'cantidad': 1, 'precio': 5.00},
+      {'nombre': 'Refresco', 'cantidad': 1, 'precio': 5.00},
+    ],
+  },
+  {
+    'fecha': '27/05/2025',
+    'total': 45.00,
+    'estado': 'Pendiente',
+    'productos': [
+      {'nombre': 'Pizza', 'cantidad': 1, 'precio': 20.00},
+      {'nombre': 'Ensalada', 'cantidad': 1, 'precio': 10.00},
+      {'nombre': 'Jugo', 'cantidad': 2, 'precio': 7.50},
+    ],
+  },
+];
+
+final List<Map<String, dynamic>> carritoCompras = [];

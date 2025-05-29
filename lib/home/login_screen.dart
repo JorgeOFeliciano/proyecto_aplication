@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class LoginScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 20),
                     const Text(
-                      'INICIAR SESION',
+                      'INICIAR SESIÓN',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
