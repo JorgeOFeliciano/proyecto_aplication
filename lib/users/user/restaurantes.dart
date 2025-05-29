@@ -14,28 +14,39 @@ class Restaurante extends StatefulWidget {
 
 class _RestauranteState extends State<Restaurante> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   final List<String> filters = ['Cerca', 'Abiertos ahora', 'Comida rápida', 'Promociones'];
+
+  List<Map<String, dynamic>> filteredRestaurants = restaurants; // ✅ Lista filtrada inicial
+
+  // ✅ Función para filtrar restaurantes según la búsqueda
+  void _filterRestaurants(String query) {
+    setState(() {
+      filteredRestaurants = restaurants.where((restaurant) {
+        return restaurant['title'].toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: const CustomDrawer(), // Utiliza la clase CustomDrawer
+      drawer: const CustomDrawer(),
       body: SafeArea(
         child: Column(
           children: [
             Builder(
               builder: (context) {
                 return CustomTopSearchBar(
-                  onMenuTap: () => Scaffold.of(context).openDrawer(), // Abre el drawer correctamente
-                  onBack: () => Navigator.pop(context), // Permite regresar si no es pantalla principal
+                  onMenuTap: () => Scaffold.of(context).openDrawer(),
+                  onBack: () => Navigator.pop(context),
                   onCartTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ListShops()), // Redirige al historial de compras
+                      MaterialPageRoute(builder: (context) => const ListShops()),
                     );
                   },
+                  onSearchChanged: _filterRestaurants, // ✅ Conecta la barra de búsqueda con el filtro
                 );
               },
             ),
@@ -55,7 +66,7 @@ class _RestauranteState extends State<Restaurante> {
                 },
               ),
             ),
-            // Lista de restaurantes en un grid
+            // ✅ Mostrar la lista filtrada en el grid
             Expanded(
               child: GridView.builder(
                 padding: const EdgeInsets.all(10),
@@ -65,9 +76,9 @@ class _RestauranteState extends State<Restaurante> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
-                itemCount: restaurants.length,
+                itemCount: filteredRestaurants.length, // ✅ Usar la lista filtrada
                 itemBuilder: (context, index) {
-                  return RestaurantCardItem(data: restaurants[index]);
+                  return RestaurantCardItem(data: filteredRestaurants[index]);
                 },
               ),
             ),

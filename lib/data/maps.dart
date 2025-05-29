@@ -67,7 +67,7 @@ List<Map<String, dynamic>> generarMesas(List<Map<String, dynamic>> restaurants) 
       mesasGeneradas.add({
         'nombre': 'Mesa $i',
         'capacidad': (i % 6) + 2, // Capacidad entre 2 y 7
-        'imagen': imagen,
+        'imagen': 'table1.png',
         'mensaje': 'Mesa generada automáticamente',
         'status': 'Disponible',
         'title': titulo,

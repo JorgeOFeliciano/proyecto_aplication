@@ -45,10 +45,10 @@ class MesaCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(mesa['title']!, style: Theme.of(context).textTheme.headlineMedium),
-                    Text('🍽️ Mesa: ${mesa['nombre']}'),
-                    Text('👥 Capacidad: ${mesa['capacidad']} personas'),
-                    Text('📅 Fecha de Reserva: ${mesa['fechaReserva'] ?? "No especificada"}'),
-                    Text('🕒 Hora de Reserva: ${mesa['horaReserva'] ?? "No especificada"}'),
+                    _buildInfoRow(Icons.chair, 'Mesa: ${mesa['nombre']}', Colors.blueGrey),
+                    _buildInfoRow(Icons.people, 'Capacidad: ${mesa['capacidad']} personas', Colors.green),
+                    _buildInfoRow(Icons.calendar_today, 'Fecha de Reserva: ${mesa['fechaReserva'] ?? "No especificada"}', Colors.teal),
+                    _buildInfoRow(Icons.access_time, 'Hora de Reserva: ${mesa['horaReserva'] ?? "No especificada"}', Colors.orange),
                   ],
                 ),
               ),
@@ -56,6 +56,16 @@ class MesaCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String text, Color iconColor) {
+    return Row(
+      children: [
+        Icon(icon, color: iconColor),
+        const SizedBox(width: 8),
+        Expanded(child: Text(text, style: TextStyle(color: Colors.grey.shade500))), // ✅ Texto en gris claro
+      ],
     );
   }
 }

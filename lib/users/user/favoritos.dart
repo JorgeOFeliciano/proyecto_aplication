@@ -14,16 +14,33 @@ class Favoritos extends StatefulWidget {
 
 class _FavoritosState extends State<Favoritos> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   final List<String> filters = ['Cerca', 'Abiertos ahora', 'Comida rápida', 'Promociones'];
+
+  List<Map<String, dynamic>> filteredFavorites = []; // ✅ Lista filtrada inicial
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeFavorites(); // ✅ Inicializa los favoritos filtrados
+  }
+
+  void _initializeFavorites() {
+    setState(() {
+      filteredFavorites = restaurants.where((restaurant) => restaurant['isFavorite'] == true).toList();
+    });
+  }
+
+  void _filterFavorites(String query) {
+    setState(() {
+      filteredFavorites = restaurants.where((restaurant) {
+        return restaurant['isFavorite'] == true &&
+            restaurant['title'].toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Filtra los restaurantes favoritos
-    final List<Map<String, dynamic>> favorites = restaurants.where(
-      (restaurant) => restaurant['isFavorite'] == true,
-    ).toList();
-
     return Scaffold(
       key: _scaffoldKey,
       drawer: const CustomDrawer(),
@@ -41,6 +58,7 @@ class _FavoritosState extends State<Favoritos> {
                       MaterialPageRoute(builder: (context) => const ListShops()),
                     );
                   },
+                  onSearchChanged: _filterFavorites,
                 );
               },
             ),
@@ -69,9 +87,9 @@ class _FavoritosState extends State<Favoritos> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
-                itemCount: favorites.length,
+                itemCount: filteredFavorites.length, 
                 itemBuilder: (context, index) {
-                  return RestaurantCardItem(data: favorites[index]);
+                  return RestaurantCardItem(data: filteredFavorites[index]);
                 },
               ),
             ),

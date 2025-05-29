@@ -14,12 +14,32 @@ class Reserva extends StatefulWidget {
 
 class _ReservaState extends State<Reserva> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final String selectedFilter = 'Reservadas'; // Solo mostrar reservadas
+  List<Map<String, dynamic>> filteredMesas = []; // ✅ Lista filtrada inicial
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeReservas(); // ✅ Inicializa la lista de reservas filtradas
+  }
+
+  void _initializeReservas() {
+    setState(() {
+      filteredMesas = tables.where((mesa) => mesa['reservada'] == true).toList();
+    });
+  }
+
+  // ✅ Función para filtrar reservas según el nombre del restaurante
+  void _filterReservas(String query) {
+    setState(() {
+      filteredMesas = tables.where((mesa) {
+        return mesa['reservada'] == true &&
+            mesa['title'].toLowerCase().contains(query.toLowerCase()); // ✅ Filtra por restaurante
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final filteredMesas = tables.where((mesa) => mesa['reservada'] == true).toList();
-
     return Scaffold(
       key: _scaffoldKey,
       drawer: const CustomDrawer(),
@@ -37,6 +57,7 @@ class _ReservaState extends State<Reserva> {
                       MaterialPageRoute(builder: (context) => const ListShops()),
                     );
                   },
+                  onSearchChanged: _filterReservas, // ✅ Filtra por restaurante
                 );
               },
             ),
@@ -57,7 +78,7 @@ class _ReservaState extends State<Reserva> {
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      itemCount: filteredMesas.length,
+                      itemCount: filteredMesas.length, // ✅ Usar la lista filtrada
                       itemBuilder: (context, index) {
                         return MesaCard(mesa: filteredMesas[index]);
                       },
