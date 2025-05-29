@@ -25,7 +25,7 @@ class CustomDrawer extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('coffe_bg.jpg'),
+                image: AssetImage('assets/coffe_bg.jpg'),
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(Colors.black.withAlpha(153), BlendMode.darken), // ✅ Sustituye withOpacity (0.6 * 255 ≈ 153)
               ),

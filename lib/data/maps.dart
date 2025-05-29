@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 
 final List<Map<String, dynamic>> restaurants = [
   {
-    'image': 'cuphead.jpg',
+    'image': 'assets/cuphead.jpg',
     'title': 'Cuphead Coffee',
     'seats': 7,
     'totalSeats': 18,
     'rating': 4,
     'favorites': 12,
     'phone': 12,
-    'image-map': 'map_cuphead.png',
+    'image-map': 'assets/map_cuphead.png',
     'direction': 'Av. Principal #101, Ciudad Hidalgo, Michoacán',
     'horariosDisponibles': {
       'inicio': TimeOfDay(hour: 7, minute: 0),
@@ -20,14 +20,14 @@ final List<Map<String, dynamic>> restaurants = [
     'isFavorite': true,
   },
   {
-    'image': 'spesso.png',
+    'image': 'assets/spesso.png',
     'title': 'Spesso Coffee',
     'seats': 7,
     'totalSeats': 20,
     'rating': 4,
     'favorites': 15,
     'phone': 13,
-    'image-map': 'map_spesso.png',
+    'image-map': 'assets/map_spesso.png',
     'direction': 'Av. Principal #123, Ciudad Hidalgo, Michoacán',
     'horariosDisponibles': {
       'inicio': TimeOfDay(hour: 7, minute: 0),
@@ -37,14 +37,14 @@ final List<Map<String, dynamic>> restaurants = [
     'isFavorite': false,
   },
   {
-    'image': 'golden.png',
+    'image': 'assets/golden.png',
     'title': 'Golden Coffee',
     'seats': 5,
     'totalSeats': 16,
     'rating': 5,
     'favorites': 18,
     'phone': 14,
-    'image-map': 'map_golden.png',
+    'image-map': 'assets/map_golden.png',
     'direction': 'Calle Dorada #55, Ciudad Hidalgo, Michoacán',
     'horariosDisponibles': {
       'inicio': TimeOfDay(hour: 8, minute: 0),
@@ -67,7 +67,7 @@ List<Map<String, dynamic>> generarMesas(List<Map<String, dynamic>> restaurants) 
       mesasGeneradas.add({
         'nombre': 'Mesa $i',
         'capacidad': (i % 6) + 2, // Capacidad entre 2 y 7
-        'imagen': 'table1.png',
+        'imagen': 'assets/table1.png',
         'mensaje': 'Mesa generada automáticamente',
         'status': 'Disponible',
         'title': titulo,

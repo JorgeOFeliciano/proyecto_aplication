@@ -16,7 +16,7 @@ class Perfil extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('fondo_perfil.png'),
+                image: AssetImage('assets/fondo_perfil.png'),
                 fit: BoxFit.cover,
               ),
             ),
