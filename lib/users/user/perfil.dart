@@ -22,18 +22,13 @@ class Perfil extends StatelessWidget {
             ),
           ),
           BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // ✅ Difuminado suave
-            child: Container(color: Colors.black.withAlpha(127)) // 0.5 * 255 ≈ 127,
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), 
+            child: Container(color: Colors.black.withAlpha(127))
           ),
 
           Column(
             children: [
-              // 🔙 Barra de navegación
-            
-
               const SizedBox(height: 50),
-
-              // 🦸 Avatar con animación Hero
               Hero(
                 tag: 'avatar_usuario',
                 child: CircleAvatar(
