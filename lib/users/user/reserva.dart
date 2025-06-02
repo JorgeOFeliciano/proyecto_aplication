@@ -7,37 +7,36 @@ import 'package:proyecto_aplication/users/user/shop_lista.dart';
 
 class Reserva extends StatefulWidget {
   const Reserva({super.key});
-
+  
   @override
   State<Reserva> createState() => _ReservaState();
 }
 
 class _ReservaState extends State<Reserva> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<Map<String, dynamic>> filteredMesas = []; // ✅ Lista filtrada inicial
-
+  List<Map<String, dynamic>> filteredMesas = [];
+  
   @override
   void initState() {
     super.initState();
-    _initializeReservas(); // ✅ Inicializa la lista de reservas filtradas
+    _initializeReservas();
   }
-
+  
   void _initializeReservas() {
     setState(() {
       filteredMesas = tables.where((mesa) => mesa['reservada'] == true).toList();
     });
   }
-
-  // ✅ Función para filtrar reservas según el nombre del restaurante
+  
   void _filterReservas(String query) {
     setState(() {
       filteredMesas = tables.where((mesa) {
         return mesa['reservada'] == true &&
-            mesa['title'].toLowerCase().contains(query.toLowerCase()); // ✅ Filtra por restaurante
+            mesa['title'].toLowerCase().contains(query.toLowerCase());
       }).toList();
     });
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +56,7 @@ class _ReservaState extends State<Reserva> {
                       MaterialPageRoute(builder: (context) => const ListShops()),
                     );
                   },
-                  onSearchChanged: _filterReservas, // ✅ Filtra por restaurante
+                  onSearchChanged: _filterReservas,
                 );
               },
             ),
@@ -78,7 +77,7 @@ class _ReservaState extends State<Reserva> {
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      itemCount: filteredMesas.length, // ✅ Usar la lista filtrada
+                      itemCount: filteredMesas.length,
                       itemBuilder: (context, index) {
                         return MesaCard(mesa: filteredMesas[index]);
                       },

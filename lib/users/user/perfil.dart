@@ -1,18 +1,44 @@
 import 'dart:ui'; // Necesario para el efecto de desenfoque
 import 'package:flutter/material.dart';
 import 'package:proyecto_aplication/data/maps.dart';
+import 'package:proyecto_aplication/home/auth_service.dart';
 
-class Perfil extends StatelessWidget {
+class Perfil extends StatefulWidget {
   const Perfil({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final usuario = usuarios[0]; // Puedes cambiar el índice o pasarlo dinámicamente
+  State<Perfil> createState() => _PerfilState();
+}
 
+class _PerfilState extends State<Perfil> {
+  Map<String, dynamic>? currentUserData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // Cargar información del usuario que inició sesión usando el ID
+  void _loadUserData() async {
+    String? userId = await AuthService.getCurrentUserId();
+    if (userId != null) {
+      setState(() {
+        currentUserData = usuarios.firstWhere(
+          (user) => user['id'] == userId,
+          orElse: () => {},
+        );
+      });
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // 🌆 Imagen de fondo con difuminado
+          // ✅ Fondo con desenfoque
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -22,8 +48,8 @@ class Perfil extends StatelessWidget {
             ),
           ),
           BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), 
-            child: Container(color: Colors.black.withAlpha(127))
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(color: Colors.black.withAlpha(127)),
           ),
 
           Column(
@@ -34,26 +60,36 @@ class Perfil extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 50,
                   backgroundColor: Colors.white,
-                  child: Icon(Icons.person, size: 60, color: Colors.blueGrey),
+                  backgroundImage: currentUserData?['imagenPerfil'] != null &&
+                          currentUserData?['imagenPerfil']!.isNotEmpty
+                      ? AssetImage(currentUserData!['imagenPerfil']!)
+                      : null,
+                  child: currentUserData?['imagenPerfil'] == null ||
+                          currentUserData?['imagenPerfil']!.isEmpty
+                      ? const Icon(Icons.person, size: 60, color: Colors.blueGrey)
+                      : null,
                 ),
               ),
               const SizedBox(height: 10),
-              
+
+              // ✅ Información del usuario activo
               Text(
-                usuario['nombre'],
-                style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                currentUserData?['nombre'] ?? 'Usuario desconocido',
+                style: const TextStyle(
+                    color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
               ),
               Text(
-                '${usuario['username']} · Se unió en ${usuario['fechaRegistro']}',
+                '${currentUserData?['username'] ?? ''} · Se unió en ${currentUserData?['fechaRegistro'] ?? 'Fecha desconocida'}',
                 style: const TextStyle(color: Colors.white70, fontSize: 14),
               ),
               Text(
-                usuario['correo'],
+                currentUserData?['correo'] ?? 'Correo no disponible',
                 style: const TextStyle(color: Colors.white54, fontSize: 12),
               ),
 
               const SizedBox(height: 20),
 
+              // ✅ Contenedor de estadísticas
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
@@ -68,32 +104,50 @@ class Perfil extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _ProfileStat(title: 'Favoritos', value: usuario['favoritos'], icon: Icons.favorite, color: Colors.red),
-                        _ProfileStat(title: 'Reseñas', value: usuario['reseñas'], icon: Icons.list_alt, color: Colors.grey),
-                        _ProfileStat(title: 'Seguidores', value: usuario['seguidores'], icon: Icons.people, color: Colors.blue),
+                        _ProfileStat(
+                            title: 'Favoritos',
+                            value: currentUserData?['favoritos'] ?? '0',
+                            icon: Icons.favorite,
+                            color: Colors.red),
+                        _ProfileStat(
+                            title: 'Reseñas',
+                            value: currentUserData?['reseñas'] ?? '0',
+                            icon: Icons.list_alt,
+                            color: Colors.grey),
+                        _ProfileStat(
+                            title: 'Seguidores',
+                            value: currentUserData?['seguidores'] ?? '0',
+                            icon: Icons.people,
+                            color: Colors.blue),
                       ],
                     ),
                     const SizedBox(height: 10),
+
+                    // ✅ Botón para agregar amigos
                     OutlinedButton.icon(
                       onPressed: () {},
                       icon: Icon(
                         Icons.person_add,
-                        color: Colors.blue, // ✅ Cambia el color aquí
-                        size: 24, // Opcional: Ajusta el tamaño del icono
+                        color: Colors.blue,
+                        size: 24,
                       ),
                       label: Text(
                         'Agregar Amigos',
-                        style: TextStyle(color: Colors.blue.shade700), // ✅ Color del texto igual al borde
+                        style: TextStyle(color: Colors.blue.shade700),
                       ),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.blue.shade700), // ✅ Borde azul
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        side: BorderSide(color: Colors.blue.shade700),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text('Resumen', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+
+                    const Text('Resumen',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
+
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Wrap(
@@ -101,8 +155,16 @@ class Perfil extends StatelessWidget {
                         spacing: 20,
                         runSpacing: 20,
                         children: [
-                          _SummaryCard(icon: Icons.redeem, title: usuario['puntos'], subtitle: 'Puntos', color: Colors.green),
-                          _SummaryCard(icon: Icons.table_bar, title: usuario['visitas'], subtitle: 'Visitas', color: Colors.brown),
+                          _SummaryCard(
+                              icon: Icons.redeem,
+                              title: currentUserData?['puntos'] ?? '0',
+                              subtitle: 'Puntos',
+                              color: Colors.green),
+                          _SummaryCard(
+                              icon: Icons.table_bar,
+                              title: currentUserData?['visitas'] ?? '0',
+                              subtitle: 'Visitas',
+                              color: Colors.brown),
                         ],
                       ),
                     ),
@@ -135,7 +197,7 @@ class _ProfileStat extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox( // ✅ Fijamos el tamaño del icono
+        SizedBox(
           width: 40,
           height: 40,
           child: Icon(icon, size: 30, color: color),
@@ -148,7 +210,6 @@ class _ProfileStat extends StatelessWidget {
   }
 }
 
-// 📦 Widget de resumen con mejor diseño y alineación
 class _SummaryCard extends StatelessWidget {
   final IconData icon;
   final String title;

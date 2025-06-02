@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class EditarDatosScreen extends StatefulWidget {
-  final Map<String, String> usuario;
+  final Map<String, String> usuario; // ✅ Recibe la información del usuario
 
   const EditarDatosScreen({super.key, required this.usuario});
 
@@ -26,6 +27,11 @@ class _EditarDatosScreenState extends State<EditarDatosScreen> {
   @override
   void initState() {
     super.initState();
+    _cargarDatosUsuario();
+  }
+
+  // ✅ Cargar la información del usuario recibido como parámetro
+  void _cargarDatosUsuario() {
     final usuario = widget.usuario;
     nombre = usuario['nombre'] ?? '';
     apellido = usuario['apellido'] ?? '';
@@ -42,6 +48,26 @@ class _EditarDatosScreenState extends State<EditarDatosScreen> {
     setState(() {
       cambiosRealizados = true;
     });
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime initialDate = fechaNacimiento.isNotEmpty 
+        ? DateFormat('dd/MM/yyyy').parse(fechaNacimiento) 
+        : DateTime.now(); // ✅ Usa la fecha almacenada o la fecha actual
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate, // ✅ Usa la fecha que está guardada
+      firstDate: DateTime(1900), // ✅ Permite seleccionar desde el año 1900
+      lastDate: DateTime.now(), // ✅ Bloquea fechas futuras
+    );
+
+    if (picked != null) {
+      setState(() {
+        fechaNacimiento = DateFormat('dd/MM/yyyy').format(picked);
+        detectarCambios();
+      });
+    }
   }
 
   void _guardarCambios() {
@@ -93,10 +119,18 @@ class _EditarDatosScreenState extends State<EditarDatosScreen> {
               _buildTextField('Apellido(s)', apellido, (value) { apellido = value; detectarCambios(); }),
               _buildTextField('Correo electrónico', correo, (value) { correo = value; detectarCambios(); }, keyboardType: TextInputType.emailAddress),
               _buildTextField('Teléfono', telefono, (value) { telefono = value; detectarCambios(); }, keyboardType: TextInputType.phone),
-              _buildTextField('Fecha de nacimiento', fechaNacimiento, (value) { fechaNacimiento = value; detectarCambios(); }),
+
+              _buildTextField(
+                'Fecha de nacimiento', 
+                fechaNacimiento, 
+                (value) => fechaNacimiento = value, 
+                keyboardType: TextInputType.none, // ✅ Evita que aparezca el teclado
+                onTap: () => _selectDate(context), // ✅ Abre el selector de fecha al tocar el campo
+              ),
               _buildTextField('Código Postal', codigoPostal, (value) { codigoPostal = value; detectarCambios(); }),
               _buildTextField('Ciudad', ciudad, (value) { ciudad = value; detectarCambios(); }),
               _buildTextField('País', pais, (value) { pais = value; detectarCambios(); }),
+
               const SizedBox(height: 30),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -128,28 +162,34 @@ class _EditarDatosScreenState extends State<EditarDatosScreen> {
     );
   }
 
-  Widget _buildTextField(String label, String value, Function(String) onChanged, {TextInputType keyboardType = TextInputType.text}) {
+  Widget _buildTextField(String label, String value, Function(String) onChanged, 
+    {TextInputType keyboardType = TextInputType.text, VoidCallback? onTap}) { // ✅ Agrega `onTap`
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        initialValue: value,
-        onChanged: onChanged,
-        keyboardType: keyboardType,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-        decoration: InputDecoration(
-          labelText: label.toUpperCase(),
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 2),
+      child: GestureDetector( // ✅ Agrega un detector de gestos para manejar `onTap`
+        onTap: onTap, // ✅ Activa el selector de fecha cuando el usuario toca el campo
+        child: AbsorbPointer( // ✅ Evita que el teclado se abra
+          child: TextFormField(
+            initialValue: value,
+            onChanged: onChanged,
+            keyboardType: keyboardType,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+            decoration: InputDecoration(
+              labelText: label.toUpperCase(),
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 2),
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Este campo es obligatorio';
+              }
+              return null;
+            },
           ),
         ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Este campo es obligatorio';
-          }
-          return null;
-        },
       ),
     );
   }

@@ -16,9 +16,8 @@ class _RestauranteState extends State<Restaurante> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final List<String> filters = ['Cerca', 'Abiertos ahora', 'Comida rápida', 'Promociones'];
 
-  List<Map<String, dynamic>> filteredRestaurants = restaurants; // ✅ Lista filtrada inicial
+  List<Map<String, dynamic>> filteredRestaurants = restaurants;
 
-  // ✅ Función para filtrar restaurantes según la búsqueda
   void _filterRestaurants(String query) {
     setState(() {
       filteredRestaurants = restaurants.where((restaurant) {
@@ -46,7 +45,7 @@ class _RestauranteState extends State<Restaurante> {
                       MaterialPageRoute(builder: (context) => const ListShops()),
                     );
                   },
-                  onSearchChanged: _filterRestaurants, // ✅ Conecta la barra de búsqueda con el filtro
+                  onSearchChanged: _filterRestaurants, 
                 );
               },
             ),
@@ -76,7 +75,7 @@ class _RestauranteState extends State<Restaurante> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
-                itemCount: filteredRestaurants.length, // ✅ Usar la lista filtrada
+                itemCount: filteredRestaurants.length,
                 itemBuilder: (context, index) {
                   return RestaurantCardItem(data: filteredRestaurants[index]);
                 },

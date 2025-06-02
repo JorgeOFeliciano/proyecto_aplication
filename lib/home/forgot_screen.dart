@@ -1,45 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:proyecto_aplication/home/auth_service.dart';
-import 'package:proyecto_aplication/data/maps.dart';
-import 'package:proyecto_aplication/home/forgot_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-  
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final TextEditingController _emailController = TextEditingController();
   bool _isLoading = false;
-  
-  void _login() async {
+
+  void _resetPassword() async {
     setState(() {
       _isLoading = true;
     });
 
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
+    final email = _emailController.text.trim();
 
-    final userId = await AuthService.loginUser(username, password);
-
-    if (userId != null) {
-      initUserData(userId); // ✅ Ya no se usa el username
-      Navigator.pushReplacementNamed(context, '/user');
-    } else {
+    if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Usuario o contraseña incorrectos')),
+        const SnackBar(content: Text('Por favor, ingresa tu correo')),
       );
+      setState(() {
+        _isLoading = false;
+      });
+      return;
     }
+
+    // Simulación de proceso de recuperación (puedes conectar esto a tu backend)
+    await Future.delayed(const Duration(seconds: 2));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Correo de recuperación enviado')),
+    );
 
     setState(() {
       _isLoading = false;
     });
+
+    Navigator.pop(context); // ✅ Regresa a la pantalla de inicio de sesión
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     const SizedBox(height: 20),
                     const Text(
-                      'INICIAR SESIÓN',
+                      'RECUPERAR CONTRASEÑA',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -85,46 +87,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
                     TextField(
-                      controller: _usernameController,
+                      controller: _emailController,
                       decoration: InputDecoration(
-                        hintText: 'USUARIO',
+                        hintText: 'CORREO ELECTRÓNICO',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: 'CONTRASEÑA',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()), // ✅ Redirige a la pantalla de recuperación
-                        ),
-                        child: const Text(
-                          '¿Olvidaste tu contraseña?',
-                          style: TextStyle(fontSize: 12), // ✅ Mantiene el color original
-                        ),
-                      ),
-                    ),
-
                     const SizedBox(height: 30),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : _login,
+                        onPressed: _isLoading ? null : _resetPassword,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF826B56), // Color marrón
                           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -139,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                               )
                             : const Text(
-                                'INICIAR SESIÓN',
+                                'ENVIAR RECUPERACIÓN',
                                 style: TextStyle(color: Colors.white),
                               ),
                       ),

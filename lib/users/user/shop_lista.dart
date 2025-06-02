@@ -21,15 +21,19 @@ class ListShops extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => DetalleCompraScreen(compra: compra)), // ✅ Abre los detalles
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          DetalleCompraScreen(compra: compra)), // Detalles de compra
                 );
               },
               child: Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
-                  leading: const Icon(Icons.receipt_long, size: 40, color: Colors.brown), // ✅ Ícono de ticket
+                  leading: const Icon(Icons.receipt_long,
+                      size: 40, color: Colors.brown),
                   title: Text("Compra del ${compra['fecha']}"),
-                  subtitle: Text("Total: \$${compra['total']} - Estado: ${compra['estado']}"),
+                  subtitle: Text(
+                      "Total: \$${compra['total']} - Estado: ${compra['estado']}"),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 18),
                 ),
               ),

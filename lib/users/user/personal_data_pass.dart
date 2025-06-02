@@ -22,6 +22,7 @@ class _CambiarContrasenaScreenState extends State<CambiarContrasenaScreen> {
   bool tieneNumero = false;
   bool minimoCaracteres = false;
 
+  // Detecta cambios en la nueva contraseña y valida sus requisitos
   void detectarCambios(String value) {
     setState(() {
       nuevaContrasena = value;
@@ -36,6 +37,7 @@ class _CambiarContrasenaScreenState extends State<CambiarContrasenaScreen> {
     });
   }
 
+  // Guarda la nueva contraseña y muestra un mensaje de éxito
   void guardarNuevaContrasena() {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(

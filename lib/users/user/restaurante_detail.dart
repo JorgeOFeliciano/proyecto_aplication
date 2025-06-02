@@ -27,12 +27,17 @@ int obtenerTotalFavoritos(String restaurantTitle) {
   return restaurants.firstWhere((restaurant) => restaurant['title'] == restaurantTitle, orElse: () => {'favorites': 0})['favorites'] as int;
 }
 
+// Función para alternar el estado de favorito de un restaurante
 void actualizarFavorito(String restaurantTitle) {
-  final int index = restaurants.indexWhere((restaurant) => restaurant['title'] == restaurantTitle);
-  if (index != -1) {
-    restaurants[index]['isFavorite'] = !(restaurants[index]['isFavorite'] as bool);
+  for (var i = 0; i < restaurants.length; i++) {
+    if (restaurants[i]['title'] == restaurantTitle) {
+      // Alterna isFavorite: si es null o false se vuelve true, y viceversa
+      restaurants[i]['isFavorite'] = !(restaurants[i]['isFavorite'] ?? false);
+      break;
+    }
   }
 }
+
 class RestaurantDetail extends StatefulWidget {
   const RestaurantDetail({super.key});
 
@@ -155,25 +160,27 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
   }
 
   /// Muestra información adicional como horario, pago y promociones
-  Widget _buildAdditionalInfo(
-      BuildContext context, Map<String, dynamic>? restaurantData) {
-    final horarioInicio = restaurantData?['horariosDisponibles']?['inicio'];
-    final horarioFin = restaurantData?['horariosDisponibles']?['fin'];
-    final horarioTexto = (horarioInicio != null && horarioFin != null)
-        ? "${horarioInicio.format(context)} - ${horarioFin.format(context)}"
-        : "Horario no disponible";
+  Widget _buildAdditionalInfo(BuildContext context, Map<String, dynamic>? restaurantData) {
+    final Map<String, dynamic> restaurantInfo = restaurants.firstWhere(
+      (restaurant) => restaurant['title'] == restaurantData?['title'],
+      orElse: () => {'horariosDisponibles': {'inicio': '00:00', 'fin': '00:00'}, 'pago': 'No disponible', 'promociones': 'Sin promociones'},
+    );
+
+    final Map<String, String> horariosDisponibles = restaurantInfo['horariosDisponibles'] as Map<String, String>;
+    final String horario = "${horariosDisponibles['inicio']} - ${horariosDisponibles['fin']}";
+    final String pago = restaurantInfo['pago'] ?? "No disponible";
+    final String promociones = restaurantInfo['promociones'] ?? "Sin promociones";
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _infoBlock(Icons.access_time, "Horario", horarioTexto),
-        _infoBlock(
-            Icons.payment, "Pago", restaurantData?['payment'] ?? "No disponible"),
-        _infoBlock(Icons.local_offer, "Promo",
-            restaurantData?['promotions'] ?? "Sin promociones"),
+        _infoBlock(Icons.access_time, "Horario", horario),
+        _infoBlock(Icons.payment, "Pago", pago),
+        _infoBlock(Icons.local_offer, "Promo", promociones),
       ],
     );
   }
+
 
   /// Bloque de información con ícono y texto
   Widget _infoBlock(IconData icon, String label, String data) {
@@ -242,7 +249,7 @@ Widget _buildLocation(Map<String, dynamic>? restaurantData) {
     );
   }
 
-  Widget _defaultLocationIcon() {
+Widget _defaultLocationIcon() {
     return Container(
       height: 100,
       alignment: Alignment.center,
@@ -254,16 +261,22 @@ Widget _buildLocation(Map<String, dynamic>? restaurantData) {
     );
   }
 
-
 Widget _buildReviews(Map<String, dynamic>? restaurantData) {
   if (restaurantData == null || !restaurantData.containsKey('title')) {
     return const Text("No se encontró el restaurante.");
   }
 
-  final List<Map<String, dynamic>> reviews = opiniones.firstWhere(
+  final dynamic matched = opiniones.firstWhere(
     (opinion) => opinion['title'] == restaurantData['title'],
     orElse: () => {'reviews': []},
-  )['reviews'] as List<Map<String, dynamic>>;
+  );
+
+  final List<dynamic> rawReviews = matched['reviews'] ?? [];
+
+  final List<Map<String, dynamic>> reviews = rawReviews
+      .whereType<Map<String, dynamic>>()
+      .toList();
+
 
   return Column(
     children: [
@@ -296,24 +309,27 @@ Widget _buildReviews(Map<String, dynamic>? restaurantData) {
 }
 
   Widget _buildServices(Map<String, dynamic>? restaurantData) {
-  final List<String> availableServices = restaurants
-      .firstWhere((service) => service['title'] == restaurantData?['title'], orElse: () => {'services': []})['services'] as List<String>;
+    final List availableServices = restaurants
+        .firstWhere(
+          (resto) => resto['id'] == restaurantData?['id'], // ✅ Buscar por ID
+          orElse: () => {'services': <String>[]}, // ✅ Asegurar lista vacía si no se encuentra
+        )['services'] as List<dynamic>;
 
-  return Column(
-    children: [
-      const Text("Servicios", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-      const SizedBox(height: 10),
-      Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: availableServices.map<Widget>(
-          (service) => Chip(label: Text(service), avatar: const Icon(Icons.check_circle, color: Colors.green)),
-        ).toList(),
-      ),
-      if (availableServices.isEmpty)
-        const Text("No hay servicios disponibles para este restaurante."),
-    ],
-  );
+    return Column(
+      children: [
+        const Text("Servicios", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: availableServices.map<Widget>(
+            (service) => Chip(label: Text(service.toString()), avatar: const Icon(Icons.check_circle, color: Colors.green)),
+          ).toList(),
+        ),
+        if (availableServices.isEmpty)
+          const Text("No hay servicios disponibles para este restaurante."),
+      ],
+    );
   }
 
   Widget _infoRow(IconData icon, String label, String? data, {double fontSize = 16}) {

@@ -24,7 +24,7 @@ class ReservaDetalleScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 child: mesaInfo['imagen'] != null && mesaInfo['imagen'].isNotEmpty
                     ? Image.asset(
-                        'assets/${mesaInfo['imagen']}',
+                        '${mesaInfo['imagen']}',
                         width: 280,
                         height: 180,
                         fit: BoxFit.cover,

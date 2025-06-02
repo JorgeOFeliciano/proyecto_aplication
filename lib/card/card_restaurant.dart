@@ -3,28 +3,40 @@ import 'package:proyecto_aplication/data/maps.dart';
 
 // ✅ Función para calcular la cantidad de mesas disponibles por restaurante
 int calcularMesasDisponibles(String restaurantTitle) {
-  return tables.where((mesa) => mesa['title'] == restaurantTitle && mesa['status'] == 'Disponible').length;
+  return tables.where(
+    (mesa) => mesa['title'] == restaurantTitle && mesa['status'] == 'Disponible',
+  ).length;
 }
 
 // ✅ Función para calcular el promedio de calificaciones basado en opiniones
 double calcularPromedioCalificaciones(String restaurantTitle) {
-  final List<Map<String, dynamic>> reviews = opiniones.firstWhere(
+  final dynamic rawReviews = opiniones.firstWhere(
     (opinion) => opinion['title'] == restaurantTitle,
     orElse: () => {'reviews': []},
-  )['reviews'] as List<Map<String, dynamic>>;
+  )['reviews'];
+
+  final List<Map<String, dynamic>> reviews = (rawReviews as List<dynamic>)
+      .map((item) => item as Map<String, dynamic>)
+      .toList();
 
   if (reviews.isEmpty) return 0.0;
 
-  final double sumRatings = reviews.map<double>((review) => review['rating'] as double).reduce((a, b) => a + b);
+  final double sumRatings = reviews
+      .map<double>((review) => review['rating'] as double)
+      .reduce((a, b) => a + b);
+
   return sumRatings / reviews.length;
 }
 
 // ✅ Función para obtener el número total de favoritos por restaurante
 int obtenerTotalFavoritos(String restaurantTitle) {
-  return restaurants.firstWhere((restaurant) => restaurant['title'] == restaurantTitle, orElse: () => {'favorites': 0})['favorites'] as int;
+  return restaurants.firstWhere(
+    (restaurant) => restaurant['title'] == restaurantTitle,
+    orElse: () => {'favorites': 0},
+  )['favorites'] as int;
 }
 
-// ✅ Tarjeta de Restaurante con Datos Dinámicos
+// ✅ Tarjeta de Restaurante sin información de horarios ni reservas
 class CustomRestaurantCard extends StatelessWidget {
   final String? imagePath;
   final String title;
@@ -34,11 +46,6 @@ class CustomRestaurantCard extends StatelessWidget {
   final int maxRating;
   final int favorites;
   final VoidCallback onTap;
-
-  final String? reservationDate;
-  final String? reservationTime;
-  final String? tableNumber;
-  final String? reservationStatus;
 
   const CustomRestaurantCard({
     super.key,
@@ -50,10 +57,6 @@ class CustomRestaurantCard extends StatelessWidget {
     required this.maxRating,
     required this.favorites,
     required this.onTap,
-    this.reservationDate,
-    this.reservationTime,
-    this.tableNumber,
-    this.reservationStatus,
   });
 
   @override
@@ -72,7 +75,7 @@ class CustomRestaurantCard extends StatelessWidget {
                 BoxShadow(
                   blurRadius: 10,
                   spreadRadius: 2,
-                  color: Colors.black.withAlpha(25), // 0.1 * 255 ≈ 25
+                  color: Colors.black.withAlpha(25),
                   offset: const Offset(0, 4),
                 ),
               ],
@@ -102,13 +105,6 @@ class CustomRestaurantCard extends StatelessWidget {
                 _buildInfoRow(Icons.chair_alt, "$seats/$totalSeats", Colors.blueGrey),
                 _buildInfoRow(Icons.star, "$rating/$maxRating", Colors.amber),
                 _buildInfoRow(Icons.favorite, "$favorites", Colors.red),
-                const SizedBox(height: 16),
-                if (reservationDate != null || reservationTime != null || tableNumber != null) ...[
-                  const Divider(thickness: 1),
-                  _buildInfoRow(Icons.calendar_today, reservationDate ?? "Sin fecha", Colors.teal),
-                  _buildInfoRow(Icons.access_time, reservationTime ?? "Sin hora", Colors.orange),
-                  _buildInfoRow(Icons.table_bar, "Mesa ${tableNumber ?? "No asignada"}", Colors.green),
-                ],
               ],
             ),
           ),
@@ -122,13 +118,18 @@ class CustomRestaurantCard extends StatelessWidget {
       children: [
         Icon(icon, color: iconColor),
         const SizedBox(width: 8),
-        Expanded(child: Text(info, style: TextStyle(color: Colors.grey.shade500))), // ✅ Texto en gris claro
+        Expanded(
+          child: Text(
+            info,
+            style: TextStyle(color: Colors.grey.shade500),
+          ),
+        ),
       ],
     );
   }
 }
 
-// ✅ Generación de tarjetas de restaurante con datos dinámicos
+// ✅ Envío de horarios y servicios con Navigator.pushNamed
 class RestaurantCardItem extends StatelessWidget {
   final Map<String, dynamic> data;
 
@@ -142,14 +143,10 @@ class RestaurantCardItem extends StatelessWidget {
       imagePath: data['image'],
       title: restaurantTitle,
       seats: calcularMesasDisponibles(restaurantTitle),
-      totalSeats: data['totalSeats'],
+      totalSeats: data['totalSeats'] ?? 0, // Se usa 0 si es nulo
       rating: calcularPromedioCalificaciones(restaurantTitle).toInt(),
       maxRating: 5,
       favorites: obtenerTotalFavoritos(restaurantTitle),
-      reservationDate: data['reservationDate'],
-      reservationTime: data['reservationTime'],
-      tableNumber: data['tableNumber'],
-      reservationStatus: data['reservationStatus'],
       onTap: () {
         Navigator.pushNamed(
           context,
@@ -157,9 +154,10 @@ class RestaurantCardItem extends StatelessWidget {
           arguments: {
             'title': restaurantTitle,
             'image': data['image'],
-            'info': data['info'],
             'image-map': data['image-map'],
             'direction': data['direction'],
+            'horariosDisponibles': data['horariosDisponibles'], // ✅ Envío de horarios
+            'services': data['services'], // ✅ Envío de servicios
           },
         );
       },

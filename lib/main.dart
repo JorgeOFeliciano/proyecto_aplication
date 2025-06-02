@@ -8,7 +8,7 @@ import 'package:proyecto_aplication/users/user/restaurante_detail.dart';
 import 'package:proyecto_aplication/users/user/restaurante_detail_menu.dart';
 import 'package:proyecto_aplication/users/user/restaurante_detail_mesas.dart';
 import 'package:proyecto_aplication/users/user/personal_data.dart';
-import 'package:proyecto_aplication/users/user/setting.dart'; // ✅ Asegurando la estructura correcta
+import 'package:proyecto_aplication/users/user/setting.dart';
 
 void main() {
   runApp(const TableSmartApp());
@@ -32,12 +32,20 @@ class TableSmartApp extends StatelessWidget {
         '/tables': (context) => const TableReservationScreen(),
         '/menu': (context) => const RestaurantMenuScreen(),
         '/personal_data': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
-          return PersonalDataScreen(usuario: args);
+          final args = ModalRoute.of(context)?.settings.arguments;
+
+          if (args is Map<String, String>) {
+            return PersonalDataScreen(usuario: args);
+          } else {
+            return const Scaffold(
+              body: Center(
+                child: Text('Error: No se proporcionaron datos de usuario'),
+              ),
+            );
+          }
         },
         '/settings': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
-          return SettingsScreen(usuario: args);
+          return const SettingsScreen();
         },
         '/help': (context) => const HelpScreen(),
       },

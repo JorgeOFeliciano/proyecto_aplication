@@ -64,7 +64,7 @@ class MesaCard extends StatelessWidget {
       children: [
         Icon(icon, color: iconColor),
         const SizedBox(width: 8),
-        Expanded(child: Text(text, style: TextStyle(color: Colors.grey.shade500))), // ✅ Texto en gris claro
+        Expanded(child: Text(text, style: TextStyle(color: Colors.grey.shade500))),
       ],
     );
   }

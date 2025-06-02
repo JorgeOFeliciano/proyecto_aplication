@@ -67,3 +67,42 @@ class SimpleButton extends StatelessWidget {
     );
   }
 }
+
+// ✅ Botón con icono y texto, con bordes y diseño personalizable
+class IconButtonCustom extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final Color backgroundColor;
+  final Color textColor;
+  final double borderRadius;
+
+  const IconButtonCustom({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    this.backgroundColor = Colors.white, // ✅ Fondo blanco por defecto
+    this.textColor = Colors.black, // ✅ Texto negro por defecto
+    this.borderRadius = 8, // ✅ Bordes redondeados suaves
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: textColor, size: 24), // ✅ Icono dentro del botón
+        label: Text(label, style: TextStyle(color: textColor)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor, // ✅ Personalización del fondo
+          foregroundColor: textColor, // ✅ Personalización del color del texto
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
+          side: const BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 2), // ✅ Borde gris claro
+        ),
+      ),
+    );
+  }
+}
