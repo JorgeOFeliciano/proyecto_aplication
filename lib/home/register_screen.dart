@@ -69,13 +69,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    String userId = 'U${(usuarios.length + 1).toString().padLeft(3, '0')}';
+
     usuarios.add({
+      'id': userId,
       'nombre': _nombreController.text,
       'apellido': _apellidoController.text,
       'username': _usernameController.text,
       'correo': _correoController.text,
       'password': _passwordController.text,
-      'fechaRegistro': DateTime.now().toLocal().toString(),
+      'fechaRegistro': DateFormat('MMMM yyyy', 'es_ES').format(DateTime.now()), // ✅ Fecha en formato "Mes Año"
       'telefono': _telefonoController.text,
       'fechaNacimiento': DateFormat('dd/MM/yyyy').format(_selectedDate!),
       'codigoPostal': _codigoPostalController.text,
@@ -87,6 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'puntos': '0',
       'visitas': '0',
       'sexo': _sexoSelected,
+      'tieneRestaurante': false, // ✅ Se asume que los nuevos usuarios no tienen restaurante por defecto
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -94,6 +98,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
     Navigator.pop(context);
   }
+
+
   // ✅ Método para validar la contraseña en tiempo real
   void _validarContrasena(String value) {
     setState(() {
@@ -311,6 +317,3 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
-
-
-

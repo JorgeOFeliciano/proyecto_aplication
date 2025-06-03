@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_aplication/users/user/reserva_detail.dart';
+import 'package:proyecto_aplication/data/maps.dart'; // ✅ Asegura que tienes acceso a la lista `restaurants`
 
 class MesaCard extends StatelessWidget {
   final Map<String, dynamic> mesa;
@@ -8,6 +9,12 @@ class MesaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ Obtén el título del restaurante usando su restaurantId
+    final String restaurantTitle = restaurants.firstWhere(
+      (r) => r['id'] == mesa['restaurantId'], // ✅ Busca el restaurante por ID
+      orElse: () => {'title': 'Restaurante desconocido'}, // ✅ Maneja errores si el restaurante no existe
+    )['title'];
+
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -44,7 +51,10 @@ class MesaCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(mesa['title']!, style: Theme.of(context).textTheme.headlineMedium),
+                    Text(
+                      restaurantTitle, // ✅ Ahora muestra el título del restaurante en lugar de restaurantId
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
                     _buildInfoRow(Icons.chair, 'Mesa: ${mesa['nombre']}', Colors.blueGrey),
                     _buildInfoRow(Icons.people, 'Capacidad: ${mesa['capacidad']} personas', Colors.green),
                     _buildInfoRow(Icons.calendar_today, 'Fecha de Reserva: ${mesa['fechaReserva'] ?? "No especificada"}', Colors.teal),

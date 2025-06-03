@@ -12,16 +12,28 @@ class TableReservationScreen extends StatefulWidget {
 
 class _TableReservationScreenState extends State<TableReservationScreen> {
   String selectedTab = 'Disponibles';
+  List<Map<String, dynamic>> _tables = [];
+  String selectedRestaurantId = '';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (selectedRestaurantId.isEmpty) {
+      final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      selectedRestaurantId = args['id'] ?? '';
+
+      _tables = tables
+          .where((m) => m['restaurantId'] == selectedRestaurantId)
+          .toList();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    String selectedTitle = args['title'];
-
-    // Filtrar las mesas que correspondan al restaurante seleccionado
     final currentList = selectedTab == 'Disponibles'
-        ? tables.where((m) => m['status'] == 'Disponible' && m['title'] == selectedTitle).toList()
-        : tables.where((m) => m['status'] != 'Disponible' && m['title'] == selectedTitle).toList();
+        ? _tables.where((m) => m['status'] == 'Disponible').toList()
+        : _tables.where((m) => m['status'] != 'Disponible').toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -31,38 +43,42 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildTabSelector(), // ✅ Reemplazamos el selector de pestañas
+            _buildTabSelector(),
             const SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: currentList.length,
-                itemBuilder: (context, index) {
-                  final mesa = currentList[index];
-                  return GestureDetector(
-                    onTap: () {
-                      if (selectedTab == 'Disponibles') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetalleReservaPage(
-                              mesaInfo: mesa,
-                            ),
-                          ),
+            currentList.isEmpty
+                ? const Expanded(
+                    child: Center(
+                      child: Text('No hay mesas disponibles.'),
+                    ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: currentList.length,
+                      itemBuilder: (context, index) {
+                        final mesa = currentList[index];
+                        return GestureDetector(
+                          onTap: () {
+                            if (selectedTab == 'Disponibles') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      DetalleReservaPage(mesaInfo: mesa),
+                                ),
+                              );
+                            }
+                          },
+                          child: _buildTableCard(mesa),
                         );
-                      }
-                    },
-                    child: _buildTableCard(mesa),
-                  );
-                },
-              ),
-            ),
+                      },
+                    ),
+                  ),
           ],
         ),
       ),
     );
   }
 
-  // ✅ Selector de pestañas usando `SimpleButton`
   Widget _buildTabSelector() {
     return Row(
       children: ['Disponibles', 'No disponibles'].map((tab) {
@@ -74,10 +90,10 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
               label: tab,
               onPressed: () {
                 setState(() {
-                  selectedTab = tab; // ✅ Ahora cambia correctamente entre pestañas
+                  selectedTab = tab;
                 });
               },
-              backgroundColor: isSelected ? Colors.brown[100]! : Colors.white, // ✅ Cambia color si está activado
+              backgroundColor: isSelected ? Colors.brown[100]! : Colors.white,
               textColor: Colors.black87,
             ),
           ),
@@ -93,11 +109,13 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(
-          color: Colors.grey.shade500.withAlpha(38),
-          blurRadius: 6,
-          offset: const Offset(0, 4),
-        )],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade500.withAlpha(38),
+            blurRadius: 6,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,11 +124,12 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
             borderRadius: BorderRadius.circular(10),
             child: mesa['imagen'] != null && mesa['imagen'].isNotEmpty
                 ? Image.asset(
-                    mesa['imagen'], 
-                    width: 90, 
-                    height: 90, 
-                    fit: BoxFit.cover, 
-                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.chair, size: 90, color: Colors.grey),
+                    mesa['imagen'],
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.chair, size: 90, color: Colors.grey),
                   )
                 : const Icon(Icons.chair, size: 90, color: Colors.grey),
           ),
@@ -119,13 +138,16 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(mesa['nombre'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                Text(mesa['nombre'],
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 18)),
                 const SizedBox(height: 6),
                 Text('Capacidad: ${mesa['capacidad']} personas'),
                 const SizedBox(height: 4),
                 _buildStatusIcon(),
                 const SizedBox(height: 6),
-                Text(mesa['mensaje'], style: const TextStyle(color: Colors.grey)),
+                Text(mesa['mensaje'],
+                    style: const TextStyle(color: Colors.grey)),
               ],
             ),
           ),
@@ -134,16 +156,21 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
     );
   }
 
-  // ✅ Icono de estado dinámico
   Widget _buildStatusIcon() {
     final isAvailable = selectedTab == 'Disponibles';
     return Row(
       children: [
-        Icon(isAvailable ? Icons.check_circle : Icons.cancel, color: isAvailable ? Colors.green : Colors.red, size: 18),
+        Icon(
+          isAvailable ? Icons.check_circle : Icons.cancel,
+          color: isAvailable ? Colors.green : Colors.red,
+          size: 18,
+        ),
         const SizedBox(width: 6),
         Text(
           isAvailable ? 'Disponible' : 'No disponible',
-          style: TextStyle(fontWeight: FontWeight.w600, color: isAvailable ? Colors.green : Colors.red),
+          style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: isAvailable ? Colors.green : Colors.red),
         ),
       ],
     );

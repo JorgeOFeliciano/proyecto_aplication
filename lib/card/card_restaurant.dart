@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_aplication/data/maps.dart';
 
-// ✅ Función para calcular la cantidad de mesas disponibles por restaurante
-int calcularMesasDisponibles(String restaurantTitle) {
+// ✅ Función para calcular la cantidad de mesas disponibles por restaurante (por ID)
+int calcularMesasDisponibles(String restaurantId) {
   return tables.where(
-    (mesa) => mesa['title'] == restaurantTitle && mesa['status'] == 'Disponible',
+    (mesa) => mesa['restaurantId'] == restaurantId && mesa['status'] == 'Disponible',
   ).length;
 }
 
-// ✅ Función para calcular el promedio de calificaciones basado en opiniones
-double calcularPromedioCalificaciones(String restaurantTitle) {
+// ✅ Función para calcular el promedio de calificaciones basado en opiniones (por ID)
+double calcularPromedioCalificaciones(String restaurantId) {
   final dynamic rawReviews = opiniones.firstWhere(
-    (opinion) => opinion['title'] == restaurantTitle,
+    (opinion) => opinion['restaurantId'] == restaurantId,
     orElse: () => {'reviews': []},
   )['reviews'];
 
@@ -28,10 +28,10 @@ double calcularPromedioCalificaciones(String restaurantTitle) {
   return sumRatings / reviews.length;
 }
 
-// ✅ Función para obtener el número total de favoritos por restaurante
-int obtenerTotalFavoritos(String restaurantTitle) {
+// ✅ Función para obtener el número total de favoritos por restaurante (por ID)
+int obtenerTotalFavoritos(String restaurantId) {
   return restaurants.firstWhere(
-    (restaurant) => restaurant['title'] == restaurantTitle,
+    (restaurant) => restaurant['id'] == restaurantId,
     orElse: () => {'favorites': 0},
   )['favorites'] as int;
 }
@@ -129,7 +129,6 @@ class CustomRestaurantCard extends StatelessWidget {
   }
 }
 
-// ✅ Envío de horarios y servicios con Navigator.pushNamed
 class RestaurantCardItem extends StatelessWidget {
   final Map<String, dynamic> data;
 
@@ -137,27 +136,28 @@ class RestaurantCardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String restaurantTitle = data['title'];
+    final String restaurantId = data['id'];
 
     return CustomRestaurantCard(
       imagePath: data['image'],
-      title: restaurantTitle,
-      seats: calcularMesasDisponibles(restaurantTitle),
-      totalSeats: data['totalSeats'] ?? 0, // Se usa 0 si es nulo
-      rating: calcularPromedioCalificaciones(restaurantTitle).toInt(),
+      title: data['title'],
+      seats: calcularMesasDisponibles(restaurantId),
+      totalSeats: data['totalSeats'] ?? 0,
+      rating: calcularPromedioCalificaciones(restaurantId).toInt(),
       maxRating: 5,
-      favorites: obtenerTotalFavoritos(restaurantTitle),
+      favorites: obtenerTotalFavoritos(restaurantId),
       onTap: () {
         Navigator.pushNamed(
           context,
           '/user_rest_det',
           arguments: {
-            'title': restaurantTitle,
+            'id': restaurantId,
+            'title': data['title'],
             'image': data['image'],
             'image-map': data['image-map'],
             'direction': data['direction'],
-            'horariosDisponibles': data['horariosDisponibles'], // ✅ Envío de horarios
-            'services': data['services'], // ✅ Envío de servicios
+            'horariosDisponibles': data['horariosDisponibles'],
+            'services': data['services'],
           },
         );
       },

@@ -4,7 +4,8 @@ import 'package:proyecto_aplication/home/auth_service.dart';
 import 'package:proyecto_aplication/items/items.dart';
 import 'package:proyecto_aplication/users/restaurante/restaurante_crear.dart';
 import 'package:proyecto_aplication/users/restaurante/restaurante_gesture.dart';
-import 'package:proyecto_aplication/users/user/help.dart'; // ✅ Importa `IconButtonCustom`
+import 'package:proyecto_aplication/users/user/help.dart';
+import 'package:proyecto_aplication/users/user/seggestion.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -24,9 +25,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _loadUserData();
   }
 
-  // Cargar información del usuario que inició sesión usando el ID
   void _loadUserData() async {
-    String? userId = await AuthService.getCurrentUserId();
+    userId = await AuthService.getCurrentUserId(); // ✅ Guarda el ID en la variable global
     if (userId != null) {
       setState(() {
         currentUserData = usuarios.firstWhere(
@@ -36,8 +36,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       });
     }
   }
-
-
 
   void _confirmarEliminarCuenta() {
     showDialog(
@@ -58,7 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
             backgroundColor: Colors.red,
             textColor: Colors.white,
-            icon: Icons.delete, // ✅ Icono dentro del botón
+            icon: Icons.delete,
           ),
         ],
       ),
@@ -67,22 +65,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _eliminarCuenta() {
     if (userId != null) {
-      usuarios.removeWhere((user) => user['id'] == userId);
-
-      restaurants.removeWhere((rest) => rest['ownerId'] == userId);
+      setState(() {
+        usuarios.removeWhere((user) => user['id'] == userId);
+        restaurants.removeWhere((rest) => rest['ownerId'] == userId);
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Cuenta eliminada correctamente')),
       );
 
       Navigator.pushReplacementNamed(context, '/login');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al eliminar la cuenta')),
+      );
     }
   }
 
-void _irAyuda() {
+  void _irAyuda() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const HelpScreen()), // ✅ Solo redirige a la pantalla
+      MaterialPageRoute(builder: (context) => const HelpScreen()),
     );
   }
 
@@ -96,7 +99,7 @@ void _irAyuda() {
 
     if (creado == true) {
       setState(() {
-        currentUserData?['tieneRestaurante'] = true; // ✅ Actualiza para mostrar "Gestionar Restaurante"
+        currentUserData?['tieneRestaurante'] = true;
       });
     }
   }
@@ -118,14 +121,11 @@ void _irAyuda() {
 
       if (eliminado == true) {
         setState(() {
-          currentUserData?['tieneRestaurante'] = false; // ✅ Actualiza la pantalla para mostrar "Crear Restaurante"
+          currentUserData?['tieneRestaurante'] = false;
         });
       }
     }
   }
-
-
-
 
   void _toggleDarkMode(bool value) {
     setState(() {
@@ -138,7 +138,6 @@ void _irAyuda() {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Configuración', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -163,13 +162,11 @@ void _irAyuda() {
         children: [
           CircleAvatar(
             radius: 50,
-            backgroundImage: currentUserData?['imagenPerfil'] != null &&
-                    currentUserData?['imagenPerfil']!.isNotEmpty
+            backgroundImage: currentUserData?['imagenPerfil'] != null && currentUserData?['imagenPerfil']!.isNotEmpty
                 ? AssetImage(currentUserData!['imagenPerfil']!)
                 : null,
             backgroundColor: Colors.grey[300],
-            child: currentUserData?['imagenPerfil'] == null ||
-                    currentUserData?['imagenPerfil']!.isEmpty
+            child: currentUserData?['imagenPerfil'] == null || currentUserData?['imagenPerfil']!.isEmpty
                 ? const Icon(Icons.person, size: 50, color: Colors.white)
                 : null,
           ),
@@ -194,59 +191,61 @@ void _irAyuda() {
   }
 
   Widget _buildButtonsSection() {
-  final tieneRestaurante = currentUserData?['tieneRestaurante'] ?? false;
+    final tieneRestaurante = currentUserData?['tieneRestaurante'] ?? false;
 
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        if (!tieneRestaurante) // ✅ Mostrar "Crear Restaurante" si NO tiene
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (!tieneRestaurante)
+            IconButtonCustom(
+              label: "Crear Restaurante",
+              onPressed: _irACrearRestaurante,
+              backgroundColor: Colors.white,
+              textColor: Colors.black,
+              icon: Icons.storefront,
+            ),
+          if (tieneRestaurante)
+            IconButtonCustom(
+              label: "Gestionar Restaurante",
+              onPressed: _irAGestionRestaurante,
+              backgroundColor: Colors.white,
+              textColor: Colors.black,
+              icon: Icons.edit,
+            ),
+          const SizedBox(height: 10),
           IconButtonCustom(
-            label: "Crear Restaurante",
-            onPressed: _irACrearRestaurante,
+            label: "Eliminar Cuenta",
+            onPressed: _confirmarEliminarCuenta,
             backgroundColor: Colors.white,
             textColor: Colors.black,
-            icon: Icons.storefront,
+            icon: Icons.delete,
           ),
-
-        if (tieneRestaurante) // ✅ Mostrar "Gestionar Restaurante" si tiene
+          const SizedBox(height: 10),
           IconButtonCustom(
-            label: "Gestionar Restaurante",
-            onPressed: _irAGestionRestaurante,
+            label: "Centro de Ayuda",
+            onPressed: _irAyuda,
             backgroundColor: Colors.white,
             textColor: Colors.black,
-            icon: Icons.edit,
+            icon: Icons.help,
           ),
-
-        const SizedBox(height: 10),
-        IconButtonCustom(
-          label: "Eliminar Cuenta",
-          onPressed: _confirmarEliminarCuenta,
-          backgroundColor: Colors.white,
-          textColor: Colors.black,
-          icon: Icons.delete,
-        ),
-        const SizedBox(height: 10),
-        IconButtonCustom(
-          label: "Centro de Ayuda",
-          onPressed: _irAyuda,
-          backgroundColor: Colors.white,
-          textColor: Colors.black,
-          icon: Icons.help,
-        ),
-        const SizedBox(height: 10),
-        IconButtonCustom(
-          label: "Sugerencias y Comentarios",
-          onPressed: () {},
-          backgroundColor: Colors.white,
-          textColor: Colors.black,
-          icon: Icons.feedback,
-        ),
-        const SizedBox(height: 30),
-      ],
-    ),
-  );
-}
-
+          const SizedBox(height: 10),
+          IconButtonCustom(
+            label: "Sugerencias y Comentarios",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SuggestionsScreen()),
+              );
+            },
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            icon: Icons.feedback,
+          ),
+          const SizedBox(height: 30),
+        ],
+      ),
+    );
+  }
 }

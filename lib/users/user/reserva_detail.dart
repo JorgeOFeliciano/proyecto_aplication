@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_aplication/data/maps.dart'; // ✅ Asegura acceso a la lista `restaurants`
 
 class ReservaDetalleScreen extends StatelessWidget {
   final Map<String, dynamic> mesaInfo;
@@ -7,9 +8,15 @@ class ReservaDetalleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ Obtén el título del restaurante usando `restaurantId`
+    final String restaurantTitle = restaurants.firstWhere(
+      (r) => r['id'] == mesaInfo['restaurantId'], // ✅ Busca por ID en la lista de restaurantes
+      orElse: () => {'title': 'Restaurante desconocido'}, // ✅ Evita errores si el restaurante no existe
+    )['title'];
+
     // Manejo seguro de horarios
-    final horarioInicio = mesaInfo['horariosDisponibles']?['inicio']?.hour ?? 0;
-    final horarioFin = mesaInfo['horariosDisponibles']?['fin']?.hour ?? 23;
+    final horarioInicio = mesaInfo['horariosDisponibles']?['inicio'] ?? "00:00";
+    final horarioFin = mesaInfo['horariosDisponibles']?['fin'] ?? "23:59";
 
     return Scaffold(
       appBar: AppBar(title: const Text("Detalle de Mesa")),
@@ -45,7 +52,7 @@ class ReservaDetalleScreen extends StatelessWidget {
             // 🌟 Nombre del restaurante
             Center(
               child: Text(
-                mesaInfo['title'],
+                restaurantTitle, // ✅ Muestra el título del restaurante en lugar de restaurantId
                 style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
@@ -72,7 +79,7 @@ class ReservaDetalleScreen extends StatelessWidget {
 
             const Text("Horario de Reservaciones", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            _buildDetailRow(Icons.access_time, "Horario", "De $horarioInicio:00 a $horarioFin:00"),
+            _buildDetailRow(Icons.access_time, "Horario", "De $horarioInicio a $horarioFin"),
           ],
         ),
       ),

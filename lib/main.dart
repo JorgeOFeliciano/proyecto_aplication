@@ -9,8 +9,11 @@ import 'package:proyecto_aplication/users/user/restaurante_detail_menu.dart';
 import 'package:proyecto_aplication/users/user/restaurante_detail_mesas.dart';
 import 'package:proyecto_aplication/users/user/personal_data.dart';
 import 'package:proyecto_aplication/users/user/setting.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // ✅ Asegura que Flutter esté listo
+  await initializeDateFormatting('es_ES', null); // ✅ Inicializa datos de fecha en español
   runApp(const TableSmartApp());
 }
 

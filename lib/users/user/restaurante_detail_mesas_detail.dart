@@ -7,18 +7,18 @@ void actualizarEstadoMesa(
   String mesaNombre,
   DateTime fecha,
   String hora,
-  String restaurante,
+  String restauranteId, // ✅ Cambio para usar ID en lugar de title
   BuildContext context,
 ) {
   final int index = tables.indexWhere(
-    (mesa) => mesa['nombre'] == mesaNombre && mesa['title'] == restaurante,
+    (mesa) => mesa['nombre'] == mesaNombre && mesa['restaurantId'] == restauranteId, // ✅ Ahora usa restaurantId
   );
   if (index != -1) {
     tables[index]['status'] = "No Disponible";
     tables[index]['reservada'] = true;
     tables[index]['fechaReserva'] = DateFormat('dd/MM/yyyy').format(fecha);
     tables[index]['horaReserva'] = hora;
-    tables[index]['title'] = restaurante;
+    tables[index]['restaurantId'] = restauranteId; // ✅ Actualiza el ID correctamente
   }
 }
 
@@ -49,60 +49,59 @@ class _DetalleReservaPageState extends State<DetalleReservaPage> {
     }
   }
 
-  // Función para convertir un String tipo "HH:mm" a TimeOfDay
-TimeOfDay parseTimeOfDay(String timeStr) {
-  final parts = timeStr.split(":");
-  return TimeOfDay(
-    hour: int.parse(parts[0]),
-    minute: int.parse(parts[1]),
-  );
-}
+  TimeOfDay parseTimeOfDay(String timeStr) {
+    final parts = timeStr.split(":");
+    return TimeOfDay(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1]),
+    );
+  }
 
-Future<void> _selectTime(BuildContext context) async {
-  final TimeOfDay? picked = await showTimePicker(
-    context: context,
-    initialTime: selectedTime,
-  );
-
-  if (picked != null) {
-    final Map<String, dynamic> restaurante = restaurants.firstWhere(
-      (r) => r['title'] == widget.mesaInfo['title'],
-      orElse: () => <String, dynamic>{},
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
     );
 
-    if (restaurante.isNotEmpty) {
-      final String inicio = restaurante['horariosDisponibles']['inicio'] ?? "00:00";
-      final String fin = restaurante['horariosDisponibles']['fin'] ?? "23:59";
+    if (picked != null) {
+      final Map<String, dynamic> restaurante = restaurants.firstWhere(
+        (r) => r['id'] == widget.mesaInfo['restaurantId'], // ✅ Ahora usa restaurantId
+        orElse: () => <String, dynamic>{},
+      );
 
-      final String selectedTimeStr =
-          "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
+      if (restaurante.isNotEmpty) {
+        final String inicio = restaurante['horariosDisponibles']['inicio'] ?? "00:00";
+        final String fin = restaurante['horariosDisponibles']['fin'] ?? "23:59";
 
-      final bool isWithinSchedule =
-          selectedTimeStr.compareTo(inicio) >= 0 && selectedTimeStr.compareTo(fin) <= 0;
+        final String selectedTimeStr =
+            "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
 
-      if (!isWithinSchedule) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Este horario no está disponible para ${widget.mesaInfo['title']}.\n"
-              "Elige entre $inicio y $fin",
+        final bool isWithinSchedule =
+            selectedTimeStr.compareTo(inicio) >= 0 && selectedTimeStr.compareTo(fin) <= 0;
+
+        if (!isWithinSchedule) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Este horario no está disponible para ${widget.mesaInfo['restaurantId']}.\n"
+                "Elige entre $inicio y $fin",
+              ),
             ),
-          ),
-        );
-      } else {
-        setState(() {
-          selectedTime = picked;
-        });
+          );
+        } else {
+          setState(() {
+            selectedTime = picked;
+          });
+        }
       }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     final restaurante = restaurants.firstWhere(
-      (r) => r['title'] == widget.mesaInfo['title'],
+      (r) => r['id'] == widget.mesaInfo['restaurantId'], // ✅ Ahora usa restaurantId
       orElse: () => {},
     );
 
@@ -142,7 +141,7 @@ Future<void> _selectTime(BuildContext context) async {
             const SizedBox(height: 12),
             Center(
               child: Text(
-                widget.mesaInfo['title'],
+                widget.mesaInfo['restaurantId'], // ✅ Muestra ID en lugar de título
                 style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
@@ -172,7 +171,7 @@ Future<void> _selectTime(BuildContext context) async {
                           widget.mesaInfo['nombre'],
                           selectedDate,
                           selectedTimeStr,
-                          widget.mesaInfo['title'],
+                          widget.mesaInfo['restaurantId'], // ✅ Usa el ID
                           context,
                         );
                       });

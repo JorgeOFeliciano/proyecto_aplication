@@ -12,6 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.3
   flutter_rating_bar: ^4.0.1
   google_maps_flutter: ^2.5.0
   image_picker: ^1.1.2
@@ -29,3 +30,11 @@ flutter:
 
   assets:
     - assets/
+
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/logo.png"
+  adaptive_icon_background: "assets/logo.png"
+  adaptive_icon_foreground: "assets/logo.png"

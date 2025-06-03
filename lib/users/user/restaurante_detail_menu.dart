@@ -16,28 +16,61 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   late String restaurantTitle;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+void didChangeDependencies() {
+  super.didChangeDependencies();
 
-    final Map<String, dynamic> args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    restaurantTitle = args['title']; // ✅ Guardamos el nombre del restaurante
+  final Map<String, dynamic> args =
+      ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
+  final String restaurantId = args['id'];
+
+  final restaurantData = restaurants.firstWhere(
+    (restaurant) => restaurant['id'] == restaurantId,
+    orElse: () => {
+      'id': '0',
+      'title': 'Restaurante Desconocido',
+      'image': 'default.png',
+      'seats': 0,
+      'totalSeats': 0,
+      'rating': 0,
+      'favorites': 0,
+      'phone': 0,
+      'image-map': 'default_map.png',
+      'direction': 'Dirección no disponible',
+      'horariosDisponibles': {
+        'inicio': TimeOfDay(hour: 0, minute: 0),
+        'fin': TimeOfDay(hour: 0, minute: 0),
+      },
+      'services': [],
+      'isFavorite': false,
+    },
+  );
+
+  restaurantTitle = restaurantData['title'];
+
+  if (allMenus.containsKey(restaurantTitle)) {
+    menu = allMenus[restaurantTitle]!;
+  } else {
     final generatedMenu = generateMenu(restaurantTitle);
-    menu = generatedMenu[restaurantTitle] ?? {};
-
-    categories = menu.keys.toList();
-    if (categories.isNotEmpty) {
-      selectedCategory = categories.first;
-    }
+    allMenus[restaurantTitle] = generatedMenu[restaurantTitle] ?? {};
+    menu = allMenus[restaurantTitle]!;
   }
+
+  categories = menu.keys.toList();
+  if (categories.isNotEmpty) {
+    selectedCategory = categories.first;
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
-    final dishes = menu.containsKey(selectedCategory) ? menu[selectedCategory]! : [];
+    final dishes =
+        menu.containsKey(selectedCategory) ? menu[selectedCategory]! : [];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Menú'),
+        title: Text('Menú - $restaurantTitle'),
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: Colors.black,
@@ -70,7 +103,8 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
           Expanded(
             child: dishes.isEmpty
                 ? const Center(
-                    child: Text("No hay platillos en esta categoría", style: TextStyle(color: Colors.grey)),
+                    child: Text("No hay platillos en esta categoría",
+                        style: TextStyle(color: Colors.grey)),
                   )
                 : ListView.builder(
                     itemCount: dishes.length,
@@ -143,11 +177,15 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(item['name'],
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 4),
-                  Text(item['description'], style: const TextStyle(color: Colors.grey)),
+                  Text(item['description'],
+                      style: const TextStyle(color: Colors.grey)),
                   const SizedBox(height: 6),
-                  Text('\$${item['price']}', style: const TextStyle(color: Colors.green)),
+                  Text('\$${item['price']}',
+                      style: const TextStyle(color: Colors.green)),
                 ],
               ),
             ),
@@ -174,4 +212,3 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
     );
   }
 }
-

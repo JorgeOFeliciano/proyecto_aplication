@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_aplication/data/maps.dart';
 import 'package:proyecto_aplication/home/auth_service.dart';
+import 'package:proyecto_aplication/users/user/contact.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
@@ -111,7 +112,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/contact');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ContactScreen()),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,

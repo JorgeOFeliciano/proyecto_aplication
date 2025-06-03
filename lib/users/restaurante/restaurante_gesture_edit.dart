@@ -85,37 +85,45 @@ class _RestaurantEditScreenState extends State<RestaurantEditScreen> {
   }
 
   void _saveChanges() {
-    if (_formKey.currentState!.validate()) {
-      final int index = restaurants.indexWhere(
-        (r) => r['id'] == widget.restaurant['id'], // ✅ Guarda cambios por ID
+  if (_formKey.currentState!.validate()) {
+    final int index = restaurants.indexWhere(
+      (r) => r['id'] == widget.restaurant['id'],
+    );
+
+    if (index != -1) {
+      String oldTitle = widget.restaurant['title']; // ✅ Guarda el título anterior
+      String newTitle = _titleController.text;
+
+      // ✅ Actualiza el título del restaurante en `restaurants`
+      restaurants[index] = {
+        ...restaurants[index],
+        'title': newTitle,
+        'phone': _phoneController.text,
+        'direction': _directionController.text,
+        'horariosDisponibles': {
+          'inicio': _startTimeController.text,
+          'fin': _endTimeController.text,
+        },
+        'services': _servicesController.text
+            .split(',')
+            .map((service) => service.trim())
+            .where((service) => service.isNotEmpty)
+            .toList(),
+        'image': _imagePath,
+      };
+
+      // ✅ Regenerar el menú con el nuevo título
+      allMenus.remove(oldTitle); // ✅ Elimina el menú con el nombre anterior
+      allMenus.addAll(generateMenu(newTitle)); // ✅ Genera un nuevo menú con el título actualizado
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Restaurante actualizado correctamente.")),
       );
 
-      if (index != -1) {
-        restaurants[index] = {
-          ...restaurants[index], // Mantiene valores previos
-          'title': _titleController.text,
-          'phone': _phoneController.text,
-          'direction': _directionController.text,
-          'horariosDisponibles': {
-            'inicio': _startTimeController.text,
-            'fin': _endTimeController.text,
-          },
-          'services': _servicesController.text
-              .split(',')
-              .map((service) => service.trim())
-              .where((service) => service.isNotEmpty)
-              .toList(),
-          'image': _imagePath,
-        };
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Restaurante actualizado correctamente.")),
-        );
-
-        Navigator.pop(context, restaurants[index]); // ✅ Envía el restaurante actualizado
-      }
+      Navigator.pop(context, restaurants[index]); // ✅ Devuelve el restaurante actualizado
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -136,18 +144,17 @@ class _RestaurantEditScreenState extends State<RestaurantEditScreen> {
           child: ListView(
             children: [
               // Campo Título (ahora editable)
+              // ✅ Campo Título (bloqueado y resaltado en gris)
               TextFormField(
                 controller: _titleController,
+                readOnly: true, // 🚫 Bloquea la edición
                 decoration: const InputDecoration(
                   labelText: "Título",
-                  border: OutlineInputBorder(), // ✅ Se agrega borde
+                  border: OutlineInputBorder(),
+                  filled: true, // 🔘 Activa el fondo de color
+                  fillColor: Color.fromARGB(255, 214, 214, 214), // 🎨 Establece un color gris claro
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor ingresa un título.";
-                  }
-                  return null;
-                },
+                style: const TextStyle(color: Color.fromARGB(255, 73, 73, 73)), // ✅ Texto gris para indicar que está bloqueado
               ),
               const SizedBox(height: 20),
 

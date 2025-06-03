@@ -67,31 +67,35 @@ final List<Map<String, dynamic>> restaurants = [
     'services': ['Reservas exclusivas', 'Menú dorado', 'Terraza'],
     'isFavorite': true,
   },
-];List<Map<String, dynamic>> generarMesas(List<Map<String, dynamic>> restaurants) {
+];
 
-  
-final List<Map<String, dynamic>> mesasGeneradas = [];
+List<Map<String, dynamic>> generarMesas(List<Map<String, dynamic>> restaurants) {
+  final List<Map<String, dynamic>> mesasGeneradas = [];
+
   for (final restaurante in restaurants) {
     final int totalMesas = restaurante['totalSeats'] ?? 0;
-    final String titulo = restaurante['title'] ?? 'Desconocido';
+    final String restaurantId = restaurante['id'] ?? 'Unknown'; // ✅ Usa el ID del restaurante
+
     for (int i = 1; i <= totalMesas; i++) {
       mesasGeneradas.add({
+        'id': '${restaurantId}_M$i', // ✅ Genera un identificador único basado en el restaurante
+        'restaurantId': restaurantId, // ✅ Se vincula con el restaurante por su ID
         'nombre': 'Mesa $i',
         'capacidad': (i % 6) + 2, // Capacidad entre 2 y 7
         'imagen': 'assets/table1.png',
         'mensaje': 'Mesa generada automáticamente',
         'status': 'Disponible',
-        'title': titulo,
         'reservada': false,
         'fechaReserva': null,
         'horaReserva': null,
       });
     }
   }
+
   return mesasGeneradas;
 }
 
-final List<Map<String, dynamic>> tables = generarMesas(restaurants);
+final List<Map<String, dynamic>> tables = generarMesas(restaurants); // ✅ Genera mesas correctamente
 
 void actualizarFavorito(String restaurantTitle) {
   for (var i = 0; i < restaurants.length; i++) {
@@ -396,7 +400,7 @@ final List<Map<String, dynamic>> usuarios = [
     'puntos': '507',
     'visitas': '78',
     'sexo': 'Masculino',
-    'tieneRestaurante': true, // ✅ Vinculación con restaurante
+    'tieneRestaurante': true,
   },
   {
     'id': 'U002',
@@ -417,7 +421,7 @@ final List<Map<String, dynamic>> usuarios = [
     'puntos': '300',
     'visitas': '45',
     'sexo': 'Femenino',
-    'tieneRestaurante': false, // ✅ No tiene restaurante
+    'tieneRestaurante': false,
   },
   {
     'id': 'U003',
@@ -438,7 +442,7 @@ final List<Map<String, dynamic>> usuarios = [
     'puntos': '800',
     'visitas': '120',
     'sexo': 'Masculino',
-    'tieneRestaurante': true, // ✅ Vinculación con restaurante
+    'tieneRestaurante': true,
   },
 ];
 
